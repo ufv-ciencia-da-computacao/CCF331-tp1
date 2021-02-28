@@ -13,3 +13,5 @@ _deps
 *.json
 main
 .vscode/
+*.txt
+!template.json

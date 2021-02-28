@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream> 
 #include <sstream>
+#include <iomanip>
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -57,33 +58,6 @@ void read_json(vector<pair<int, float>> adj[]) {
     }
 }
 
-void graph_to_txt(vector<pair<int, float>> adj[], int V) {
-    ofstream outfile;
-    outfile.open("grafo.txt");
-
-    outfile << V << endl;
-
-    unordered_map<pair<int, int>, bool, hash_pair> vis;
-
-    int v;
-    double w; 
-    for (int u = 1; u < V; u++)  { 
-        for (auto it = adj[u].begin(); it!=adj[u].end(); it++)  { 
-            v = it->first; 
-            w = it->second;
-
-            pair<int, int> from_to = make_pair(u, v);
-            pair<int, int> to_from = make_pair(v, u);
-            if (vis[from_to] == false && vis[to_from] == false) {
-                outfile << u << " " << v << " " << w << endl; 
-                vis[from_to] = true;  
-                vis[to_from] = true;    
-            }
-        } 
-    } 
-
-    outfile.close();
-}
 
 int get_length_txt() {
     ifstream infile;
@@ -127,5 +101,84 @@ void read_txt(vector<pair<int, float>> adj[]) {
 
     infile.close();
 }
+
+void graph_to_txt(vector<pair<int, float>> adj[], int V) {
+    ofstream outfile;
+    outfile.open("grafo.txt");
+
+    outfile << V << endl;
+
+    unordered_map<pair<int, int>, bool, hash_pair> vis;
+
+    int v;
+    double w; 
+    for (int u = 1; u <= V; u++)  { 
+        for (auto it = adj[u].begin(); it!=adj[u].end(); it++)  { 
+            v = it->first; 
+            w = it->second;
+
+            pair<int, int> from_to = make_pair(u, v);
+            pair<int, int> to_from = make_pair(v, u);
+            if (vis[from_to] == false && vis[to_from] == false) {
+                outfile << u << " " << v << " " << w << endl; 
+                vis[from_to] = true;  
+                vis[to_from] = true;    
+            }
+        } 
+    } 
+
+    outfile.close();
+}
+
+void graph_to_json(vector<pair<int, float>> adj[], int V) {
+    fstream template_json("template.json");
+    json obj;
+    template_json >> obj;
+    
+    unordered_map<pair<int, int>, bool, hash_pair> vis;
+
+    int edges = 1;
+    for (int u = 1; u <= V; u++) {
+        json node = json {{to_string(u), json {{"id", u}, {"label", to_string(u)}}}};
+        obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
+        
+        for (auto it = adj[u].begin(); it != adj[u].end(); it++) {
+            int v = it->first;
+            float w = it->second;
+
+            pair<int, int> from_to = make_pair(u, v);
+            pair<int, int> to_from = make_pair(v, u);
+            if (vis[from_to] == false && vis[to_from] == false) {
+
+                json edge = json{{to_string(edges), json{{"from", u}, 
+                                                        {"to", v}, 
+                                                        {"label", to_string(w)}, 
+                                                        {"id", edges}, 
+                                                        {"color", json::value_t::object}}}};
+                
+                obj["data"]["edges"]["_data"].insert(edge.begin(), edge.end());
+
+                edges++;                
+                vis[from_to] = true;  
+                vis[to_from] = true;    
+            }            
+        }
+    }
+
+    obj["data"]["nodes"]["length"] = V;
+    obj["data"]["edges"]["length"] = edges;
+
+    // "1":{"id":1,"label":"1"} nodes
+    // {"1":{"from":1,"to":2,"label":"1.2","id":"1","color":{}}, edges
+
+    ofstream outfile;
+    outfile.open("grafo_out.json");
+
+    outfile << obj;
+
+    outfile.close();
+    template_json.close();
+}
+
 }
 #endif

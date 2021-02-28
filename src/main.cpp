@@ -7,7 +7,7 @@ using namespace ::std;
 void print_graph(vector<pair<int,float>> adj[], int V) { 
     int v;
     double w; 
-    for (int u = 1; u < V; u++)  { 
+    for (int u = 1; u <= V; u++)  { 
         cout << "Vértice " << u << " conecta-se ao\n"; 
         for (auto it = adj[u].begin(); it!=adj[u].end(); it++)  { 
             v = it->first; 
@@ -26,5 +26,6 @@ int main () {
     // leitura::read_json(adj);
     // leitura::graph_to_txt(adj, V);
 
-    print_graph(adj, V);
+    // print_graph(adj, V);
+    leitura::graph_to_json(adj, V);
 }
