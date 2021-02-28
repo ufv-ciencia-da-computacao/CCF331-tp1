@@ -19,9 +19,12 @@ void print_graph(vector<pair<int,float>> adj[], int V) {
 } 
 
 int main () {
-    int V = leitura::get_length_json();
+    // int V = leitura::get_length_json();
+    int V = leitura::get_length_txt();
     vector<pair<int,float>> adj[V+1];
-    leitura::read_json(adj);
+    leitura::read_txt(adj);
+    // leitura::read_json(adj);
+    // leitura::graph_to_txt(adj, V);
 
     print_graph(adj, V);
 }
