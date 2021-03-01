@@ -11,8 +11,8 @@ class Grafo {
     private:
     vector<vector<pair<int, double>>> adj;
 
-    void dfsIntern(int from, vector<int> &vis, set<pair<int,int>> &visEdges, vector<int> &visitOrder, vector<pair<int,int>> &returnEdges) {
-        vis[from] = 1;
+    void dfsIntern(int from, vector<int> &vis, set<pair<int,int>> &visEdges, vector<int> &visitOrder, vector<pair<int,int>> &returnEdges, int comp){
+        vis[from] = comp;
         visitOrder.push_back(from);
         for(auto to : adj[from]) {
             if(!vis[to.first]) {
@@ -29,9 +29,14 @@ class Grafo {
 
     public:
     void dfs(vector<int> &visitOrder, vector<pair<int, int>> returnEdges) {
-        vector<int> vis(adj.size(), 0);
+        int n = adj.size();
+		vector<int> vis(n, 0);
         set<pair<int,int>> visEdges;
-        dfsIntern(1, vis, visEdges, visitOrder, returnEdges);
+		
+		int comp = 0;
+
+        for(int i = 1; i <= n; ++i)
+			if(!vis[i]) dfsIntern(i, vis, visEdges, visitOrder, returnEdges, ++comp);
     };
 };
 
