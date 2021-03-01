@@ -4,40 +4,82 @@
 #include <vector>
 #include <utility>
 #include <set>
+#include <algorithm>
 
 using namespace ::std;
 
 class Grafo {
-    private:
-    vector<vector<pair<int, double>>> adj;
-
-    void dfsIntern(int from, vector<int> &vis, set<pair<int,int>> &visEdges, vector<int> &visitOrder, vector<pair<int,int>> &returnEdges, int comp){
-        vis[from] = comp;
-        visitOrder.push_back(from);
-        for(auto to : adj[from]) {
-            if(!vis[to.first]) {
-                visEdges.insert(make_pair(from, to.first));
-                visEdges.insert(make_pair(to.first, from));
-                dfsIntern(to.first, vis, visEdges, visitOrder, returnEdges);
-            } else {
-                if(visEdges.find(make_pair(from, to.first)) == visEdges.end()) {
-                    returnEdges.push_back(make_pair(from, to.first));
-                }
-            }
-        }
-    }
 
     public:
-    void dfs(vector<int> &visitOrder, vector<pair<int, int>> returnEdges) {
+
+    struct Edge {
+        int from;
+        int to;
+        double weight;
+
+        Edge(){};
+
+        Edge(int _from, int _to, double _weight) {
+            from = _from;
+            to = _to;
+            weight = _weight;
+        }
+    };
+
+    Grafo(vector<Edge> edgeList) {
+        
+    };
+
+    void dfs(vector<int> &visitOrder, vector<Edge> returnEdges) {
         int n = adj.size();
-		vector<int> vis(n, 0);
-        set<pair<int,int>> visEdges;
+		vector<int> vis(n, 0), visEdge(n, 0), returnEdgesList;
 		
 		int comp = 0;
 
-        for(int i = 1; i <= n; ++i)
-			if(!vis[i]) dfsIntern(i, vis, visEdges, visitOrder, returnEdges, ++comp);
+        for(int i = 1; i <= n; ++i) {
+			if(!vis[i]) {
+                // clear visit order every time to create the visit forest
+                dfsIntern(i, vis, visEdge, visitOrder, returnEdgesList, ++comp);
+            }
+        }
     };
+
+
+
+    private:
+
+    struct Adjacent {
+        int to;
+        int id;
+        double weight;
+
+        Adjacent(){};
+
+        Adjacent(int _to, double _weight, int _id) {
+            to = _to;
+            id = _id;
+            weight = _weight;
+        };
+    };
+
+    vector<vector<Adjacent>> adj;
+    vector<Edge> edgeList;
+
+    void dfsIntern(int from, vector<int> &vis, vector<int> &visEdges, vector<int> &visitOrder, vector<int> &returnEdges, int comp){
+        vis[from] = comp;
+        visitOrder.push_back(from);
+        for(auto adjacent : adj[from]) {
+            if(!vis[adjacent.to]) {
+                visEdges[adjacent.id] = 1;
+                dfsIntern(adjacent.to, vis, visEdges, visitOrder, returnEdges, comp);
+            } else {
+                if(!visEdges[adjacent.id]) {
+                    returnEdges.push_back(adjacent.id);
+                }
+            }
+        }
+    };
+   
 };
 
 #endif
