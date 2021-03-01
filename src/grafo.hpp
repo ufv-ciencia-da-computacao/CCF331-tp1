@@ -2,7 +2,8 @@
 #define GRAFO_HPP
 
 #include <vector>
-#include <pair>
+#include <utility>
+#include <set>
 
 using namespace ::std;
 
@@ -10,14 +11,18 @@ class Grafo {
     private:
     vector<vector<pair<int, double>>> adj;
 
-    void dfsIntern(int at, vector<int> &vis, vector<int> &visitOrder, vector<pair<int,int>> &returnEdges) {
-        vis[at] = 1;
-        visitOrder.push_back(at);
-        for(auto to : adj[at]) {
+    void dfsIntern(int from, vector<int> &vis, set<pair<int,int>> &visEdges, vector<int> &visitOrder, vector<pair<int,int>> &returnEdges) {
+        vis[from] = 1;
+        visitOrder.push_back(from);
+        for(auto to : adj[from]) {
             if(!vis[to.first]) {
-                dfsIntern(to.first, vis, visitOrder, returnEdges);
+                visEdges.insert(make_pair(from, to.first));
+                visEdges.insert(make_pair(to.first, from));
+                dfsIntern(to.first, vis, visEdges, visitOrder, returnEdges);
             } else {
-                returnEdges.push_back(make_pair(at, to.first));
+                if(visEdges.find(make_pair(from, to.first)) == visEdges.end()) {
+                    returnEdges.push_back(make_pair(from, to.first));
+                }
             }
         }
     }
@@ -25,7 +30,8 @@ class Grafo {
     public:
     void dfs(vector<int> &visitOrder, vector<pair<int, int>> returnEdges) {
         vector<int> vis(adj.size(), 0);
-        dfsIntern(1, vis, visitOrder, returnEdges);
+        set<pair<int,int>> visEdges;
+        dfsIntern(1, vis, visEdges, visitOrder, returnEdges);
     };
 };
 
