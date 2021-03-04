@@ -28,7 +28,7 @@ class Graph {
             weight = _weight;
         }
     };
-    
+
     Graph(vector<Edge> edgeList, int n);
     int order();
     int size();
@@ -79,11 +79,11 @@ Graph::Graph(vector<Edge> edgeList, int n) {
 }
 
 int Graph::order() {
-
+    return N;
 }
 
 int Graph::size() {
-
+    return M;
 }
 
 vector<int> Graph::neighbors(int vertex) {
@@ -91,7 +91,7 @@ vector<int> Graph::neighbors(int vertex) {
 }
 
 int Graph::degree(int vertex) {
-
+    return adj[vertex].size();
 }
 
 vector<int> Graph::dfs(int from) {
@@ -103,7 +103,13 @@ vector<Graph::Edge> Graph::dfsReturnEdges(int from) {
 }
 
 vector<vector<int>> Graph::connectedComponents() {
+    vector<vector<int>> dfs_forest;
+    vector<int> vis (N + 1, 0);
 
+    for(int i = 1; i <= N; ++i)
+        if(!vis[i]) dfs_forest.push_back(dfs(i, vis));
+
+    return dfs_forest;
 }
 
 bool Graph::articulation(int vertex) {
@@ -128,7 +134,7 @@ vector<int> Graph::dfs(int from, vector<int> &vis) {
 }
 
 vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges) {
-    
+
 }
 
 #endif
