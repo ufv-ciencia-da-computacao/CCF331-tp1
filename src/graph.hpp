@@ -19,7 +19,7 @@ class Graph {
         Edge(int _from, int _to) {
             from = _from;
             to = _to;
-            weight = 0;
+            weight = 1;
         }
 
         Edge(int _from, int _to, double _weight) {
@@ -51,62 +51,31 @@ class Graph {
             id = _id;
             weight = _weight;
         };
+
+        bool operator < (const Adjacent &b) {
+            return to < b.to;
+        };
     };
     vector<vector<Adjacent>> adj;
     int N, M;
 
     vector<int> dfs(int from, vector<int> &vis);
-    vector<int> dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges);
-
-    // void dfsIntern(int from, vector<int> &vis, vector<int> &visEdges, vector<int> &visitOrder, vector<Grafo::Edge> &returnEdges, int comp){
-    //     vis[from] = comp;
-    //     visitOrder.push_back(from);
-    //     for(auto adjacent : adj[from]) {
-    //         if(!vis[adjacent.to]) {
-    //             visEdges[adjacent.id] = 1;
-    //             dfsIntern(adjacent.to, vis, visEdges, visitOrder, returnEdges, comp);
-    //         } else {
-    //             if(!visEdges[adjacent.id]) {
-    //                 returnEdges.emplace_back(from, adjacent.to, adjacent.weight);
-    //             }
-    //         }
-    //     }
-    // };
-
-    // Graph(vector<Edge> edgeList, int n)
-    // {
-    //     adj.assign(n+1, vector<Adjacent>());
-    //     int m = edgeList.size();
-    //     for(int i=0; i<m; i++) {
-    //         auto edge = edgeList[i];
-    //         adj[edge.from].emplace_back(edge.to, edge.weight, i);
-    //         adj[edge.to].emplace_back(edge.from, edge.weight, i);
-    //     }
-
-    //     for(int i=0; i<=n; i++) {
-    //         sort(adj[i].begin(), adj[i].end(), [&](Adjacent a, Adjacent b) {
-    //             return a.to < b.to;
-    //         });
-    //     }
-    // };
-
-    // void dfs(vector<int> &visitOrder, vector<Edge> returnEdges) {
-    //     int n = adj.size();
-	// 	vector<int> vis(n, 0), visEdge(n, 0);
-		
-	// 	int comp = 0;
-
-    //     for(int i = 1; i <= n; ++i) {
-	// 		if(!vis[i]) {
-    //             // clear visit order every time to create the visit forest
-    //             dfsIntern(i, vis, visEdge, visitOrder, returnEdges, ++comp);
-    //         }
-    //     }
-    // };
+    vector<Edge> dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges);
 };
 
 Graph::Graph(vector<Edge> edgeList, int n) {
+    N = n;
+    M = edgeList.size();
+    adj.assign(N+1, vector<Adjacent>());
+    for(int i=0; i<M; i++) {
+        Edge e = edgeList[i];
+        adj[e.from].emplace_back(e.to, e.weight, i);
+        adj[e.to].emplace_back(e.from, e.weight, i);
+    }
 
+    for(int i=0; i<=N; i++) {
+        sort(adj[i].begin(), adj[i].end());
+    }
 }
 
 int Graph::order() {
@@ -158,7 +127,7 @@ vector<int> Graph::dfs(int from, vector<int> &vis) {
     return order;
 }
 
-vector<int> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges) {
+vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges) {
     
 }
 
