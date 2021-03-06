@@ -87,7 +87,11 @@ int Graph::size() {
 }
 
 vector<int> Graph::neighbors(int vertex) {
-
+    vector<int> neigh;
+    for(int i=0;i<adj[vertex].size(); i++) {
+        neigh.push_back(adj[vertex][i].id);
+    }
+    return neigh;
 }
 
 int Graph::degree(int vertex) {
@@ -113,7 +117,18 @@ vector<vector<int>> Graph::connectedComponents() {
 }
 
 bool Graph::articulation(int vertex) {
+    vector<vector<int>> dfs_forest_origin = connectedComponents();
+    int len_origin = dfs_forest_origin.size();
 
+    vector<vector<int>> dfs_forest;
+    vector<int> vis (N + 1, 0);
+    vis[vertex] = 1;
+
+    for(int i = 1; i <= N; ++i)
+        if(!vis[i]) dfs_forest.push_back(dfs(i, vis));
+    
+    if(dfs_forest.size() > len_origin) return true;
+    return false;
 }
 
 bool Graph::bridge(Graph::Edge edge) {
