@@ -1,31 +1,24 @@
 #include <iostream>
 #include <fstream> 
 #include "leitura.hpp"
+#include "graph.hpp"
 
 using namespace ::std;
 
-void print_graph(vector<pair<int,float>> adj[], int V) { 
+void print_graph(vector<Graph::Edge> edge_list) { 
     int v;
     double w; 
-    for (int u = 1; u <= V; u++)  { 
-        cout << "Vértice " << u << " conecta-se ao\n"; 
-        for (auto it = adj[u].begin(); it!=adj[u].end(); it++)  { 
-            v = it->first; 
-            w = it->second; 
-            cout << "\tVértice " << v << " com peso = " << w << "\n"; 
-        } 
-        cout << "\n"; 
+
+    for (Graph::Edge e: edge_list)  { 
+        if (e.from > e.to) cout << e.from << " " << e.to << " " << e.weight << endl;
+        else cout << e.to << " " << e.from << " " << e.weight << endl;
     } 
 } 
 
 int main () {
-    // int V = leitura::get_length_json();
-    int V = leitura::get_length_txt();
-    vector<pair<int,float>> adj[V+1];
-    leitura::read_txt(adj);
-    // leitura::read_json(adj);
-    // leitura::graph_to_txt(adj, V);
+    int N = leitura::get_length_txt("grafo.txt");
+    vector<Graph::Edge> edge_list = leitura::read_txt("grafo.txt");
 
-    // print_graph(adj, V);
-    leitura::graph_to_json(adj, V);
+    leitura::edge_list_to_json(edge_list, N, "grafo_out.json");
+    leitura::edge_list_to_txt(edge_list, N, "grafo_out.txt");
 }

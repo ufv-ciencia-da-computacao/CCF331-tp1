@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iomanip>
 #include "json.hpp"
+#include "graph.hpp"
 
 using json = nlohmann::json;
 using namespace ::std;
@@ -21,22 +22,27 @@ struct hash_pair {
     } 
 };
 
-int get_length_json() {
-    ifstream grafos_file("Grafo.json");
+int get_length_json(string filename) {
+    ifstream grafos_file(filename);
     json obj;
 
     grafos_file >> obj;  
     int length_vertices = obj["data"]["nodes"]["length"];
 
+    grafos_file.close();
+    
     return length_vertices;
 }
-void read_json(vector<pair<int, float>> adj[]) {
-    ifstream grafos_file("Grafo.json");
+
+vector<Graph::Edge> read_json(string filename) {
+    ifstream grafos_file(filename);
     json obj;
 
     grafos_file >> obj; 
 
     unordered_map<int, int> map_id_node;
+
+    vector<Graph::Edge> edge_list;
 
     for (auto &el: obj["data"]["nodes"]["_data"].items()) {
         auto& dict = el.value();
@@ -53,15 +59,17 @@ void read_json(vector<pair<int, float>> adj[]) {
         auto from = map_id_node[dict["from"].get<int>()];
         auto label = stof(dict["label"].get<string>());
 
-        adj[from].push_back(make_pair(to, label));
-        adj[to].push_back(make_pair(from, label));
+        edge_list.emplace_back(from, to, label);
     }
+
+    grafos_file.close();
+
+    return edge_list;
 }
 
-
-int get_length_txt() {
+int get_length_txt(string filename) {
     ifstream infile;
-    infile.open("grafo.txt");
+    infile.open(filename);
 
     if (infile.is_open()) {
         string line;
@@ -77,9 +85,11 @@ int get_length_txt() {
     infile.close();
 }
 
-void read_txt(vector<pair<int, float>> adj[]) {
+vector<Graph::Edge> read_txt(string filename) {
     ifstream infile;
-    infile.open("grafo.txt");
+    infile.open(filename);
+
+    vector<Graph::Edge> edge_list;
 
     if (infile.is_open()) {
         string line;
@@ -90,89 +100,69 @@ void read_txt(vector<pair<int, float>> adj[]) {
             stringstream ss(line);
             int vertice_from;
             int vertice_to;
-            float weight;
+            double weight;
 
             ss >> vertice_from >> vertice_to >> weight;
-
-            adj[vertice_from].push_back(make_pair(vertice_to, weight));
-            adj[vertice_to].push_back(make_pair(vertice_from, weight));
+            edge_list.emplace_back(vertice_from, vertice_to, weight);
         }
     }
 
     infile.close();
+    return edge_list;
 }
 
-void graph_to_txt(vector<pair<int, float>> adj[], int V) {
+void edge_list_to_txt(vector<Graph::Edge> edge_list, int N, string filename) {
     ofstream outfile;
-    outfile.open("grafo.txt");
+    outfile.open(filename);
 
-    outfile << V << endl;
+    outfile << N << endl;
 
-    unordered_map<pair<int, int>, bool, hash_pair> vis;
-
-    int v;
-    double w; 
-    for (int u = 1; u <= V; u++)  { 
-        for (auto it = adj[u].begin(); it!=adj[u].end(); it++)  { 
-            v = it->first; 
-            w = it->second;
-
-            pair<int, int> from_to = make_pair(u, v);
-            pair<int, int> to_from = make_pair(v, u);
-            if (vis[from_to] == false && vis[to_from] == false) {
-                outfile << u << " " << v << " " << w << endl; 
-                vis[from_to] = true;  
-                vis[to_from] = true;    
-            }
-        } 
+    for (Graph::Edge e: edge_list)  { 
+        if (e.from > e.to) outfile << e.to << " " << e.from << " " << e.weight << endl;
+        else outfile << e.from << " " << e.to << " " << e.weight << endl;
     } 
 
     outfile.close();
 }
 
-void graph_to_json(vector<pair<int, float>> adj[], int V) {
+void edge_list_to_json(vector<Graph::Edge> edge_list, int N, string filename) {
     fstream template_json("template.json");
     json obj;
     template_json >> obj;
     
-    unordered_map<pair<int, int>, bool, hash_pair> vis;
-
-    int edges = 1;
-    for (int u = 1; u <= V; u++) {
-        json node = json {{to_string(u), json {{"id", u}, {"label", to_string(u)}}}};
-        obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
-        
-        for (auto it = adj[u].begin(); it != adj[u].end(); it++) {
-            int v = it->first;
-            float w = it->second;
-
-            pair<int, int> from_to = make_pair(u, v);
-            pair<int, int> to_from = make_pair(v, u);
-            if (vis[from_to] == false && vis[to_from] == false) {
-
-                json edge = json{{to_string(edges), json{{"from", u}, 
-                                                        {"to", v}, 
-                                                        {"label", to_string(w)}, 
-                                                        {"id", edges}, 
-                                                        {"color", json::value_t::object}}}};
-                
-                obj["data"]["edges"]["_data"].insert(edge.begin(), edge.end());
-
-                edges++;                
-                vis[from_to] = true;  
-                vis[to_from] = true;    
-            }            
+    int counter_edges = 1;
+    set<int> vis;
+    for (Graph::Edge e: edge_list) {
+        if (vis.find(e.from)==vis.end()) {
+            json node = json {{to_string(e.from), json {{"id", e.from}, {"label", to_string(e.from)}}}};
+            obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
+            vis.insert(e.from);
+        } 
+        if (vis.find(e.to)==vis.end()) {
+            json node = json {{to_string(e.to), json {{"id", e.to}, {"label", to_string(e.to)}}}};
+            obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
+            vis.insert(e.to);
         }
+
+        json json_edge = json{{to_string(counter_edges), json{{"from", e.from}, 
+                                                {"to", e.to}, 
+                                                {"label", to_string(e.weight)}, 
+                                                {"id", counter_edges}, 
+                                                {"color", json::value_t::object}}}};
+        
+        obj["data"]["edges"]["_data"].insert(json_edge.begin(), json_edge.end());
+
+        counter_edges++;                       
     }
 
-    obj["data"]["nodes"]["length"] = V;
-    obj["data"]["edges"]["length"] = edges;
+    obj["data"]["nodes"]["length"] = N;
+    obj["data"]["edges"]["length"] = edge_list.size();
 
     // "1":{"id":1,"label":"1"} nodes
     // {"1":{"from":1,"to":2,"label":"1.2","id":"1","color":{}}, edges
 
     ofstream outfile;
-    outfile.open("grafo_out.json");
+    outfile.open(filename);
 
     outfile << obj;
 
