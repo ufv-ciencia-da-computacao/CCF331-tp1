@@ -1,5 +1,5 @@
-#ifndef GRAFO_HPP
-#define GRAFO_HPP
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
 
 #include <vector>
 #include <utility>
@@ -60,7 +60,7 @@ class Graph {
     int N, M;
 
     vector<int> dfs(int from, vector<int> &vis);
-    vector<Edge> dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges);
+    vector<Edge> dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges);
 };
 
 Graph::Graph(vector<Edge> edgeList, int n) {
@@ -99,11 +99,13 @@ int Graph::degree(int vertex) {
 }
 
 vector<int> Graph::dfs(int from) {
-
+    vector<int> vis(N + 1, 0);
+    return dfs(from, vis);
 }
 
 vector<Graph::Edge> Graph::dfsReturnEdges(int from) {
-
+    vector<int> vis(N+1, 0), visEdges(M+1, 0);
+    return dfsReturnEdges(from, vis, visEdges);
 }
 
 vector<vector<int>> Graph::connectedComponents() {
@@ -148,8 +150,20 @@ vector<int> Graph::dfs(int from, vector<int> &vis) {
     return order;
 }
 
-vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> visEdges) {
-
+vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges) {
+    vis[from] = 1;
+    vector<Graph::Edge> returnEdges;
+    for(auto neigh : adj[from]) {
+        if(!vis[neigh.to]) {
+            visEdges[neigh.id] = 1;
+            vector<Graph::Edge> path = dfsReturnEdges(neigh.to, vis, visEdges);
+            returnEdges.insert(returnEdges.end(), path.begin(), path.end());
+        } else if(!visEdges[neigh.id]) {
+            visEdges[neigh.id] = 1;
+            returnEdges.emplace_back(from, neigh.to, neigh.weight);
+        }
+    }
+    return returnEdges;
 }
 
 #endif
