@@ -89,7 +89,7 @@ int Graph::size() {
 vector<int> Graph::neighbors(int vertex) {
     vector<int> neigh;
     for(int i=0;i<adj[vertex].size(); i++) {
-        neigh.push_back(adj[vertex][i].id);
+        neigh.push_back(adj[vertex][i].to);
     }
     return neigh;
 }
