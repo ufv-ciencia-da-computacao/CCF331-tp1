@@ -134,7 +134,26 @@ bool Graph::articulation(int vertex) {
 }
 
 bool Graph::bridge(Graph::Edge edge) {
+    vector<int> vis (N+1, 0);
+    vector<int> orderB;
+    vis[edge.from] = 1;
+    orderB = dfs(edge.to, vis);
 
+    unordered_map<int, bool> common_path;
+    for (auto v: orderB) {
+        common_path[v] = true;
+    }
+    
+    vector<int> vis (N+1, 0);
+    vector<int> orderA;
+    vis[edge.to] = 1;
+    orderA = dfs(edge.from, vis); 
+
+    for (auto v: orderA) {
+        if (common_path[v]==true) return false;        
+    }
+    
+    return true;
 }
 
 vector<int> Graph::dfs(int from, vector<int> &vis) {
