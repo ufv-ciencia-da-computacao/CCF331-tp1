@@ -5,6 +5,7 @@
 #include <utility>
 #include <set>
 #include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
@@ -29,6 +30,7 @@ class Graph {
         }
     };
 
+    Graph();
     Graph(vector<Edge> edgeList, int n);
     int order();
     int size();
@@ -62,6 +64,10 @@ class Graph {
     vector<int> dfs(int from, vector<int> &vis);
     vector<Edge> dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges);
 };
+
+Graph::Graph() {
+    /* Empty */
+}
 
 Graph::Graph(vector<Edge> edgeList, int n) {
     N = n;
@@ -134,20 +140,20 @@ bool Graph::articulation(int vertex) {
 }
 
 bool Graph::bridge(Graph::Edge edge) {
-    vector<int> vis (N+1, 0);
+    vector<int> visB (N+1, 0);
     vector<int> orderB;
-    vis[edge.from] = 1;
-    orderB = dfs(edge.to, vis);
+    visB[edge.from] = 1;
+    orderB = dfs(edge.to, visB);
 
     unordered_map<int, bool> common_path;
     for (auto v: orderB) {
         common_path[v] = true;
     }
     
-    vector<int> vis (N+1, 0);
+    vector<int> visA (N+1, 0);
     vector<int> orderA;
-    vis[edge.to] = 1;
-    orderA = dfs(edge.from, vis); 
+    visA[edge.to] = 1;
+    orderA = dfs(edge.from, visA); 
 
     for (auto v: orderA) {
         if (common_path[v]==true) return false;        
