@@ -180,8 +180,7 @@ vector<int> Graph::dfs(int from, vector<int> &vis) {
     return order;
 }
 
-vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges) {
-    vis[from] = 1;
+vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges){
     vector<Graph::Edge> returnEdges;
     stack<int> s;
     s.push(from);
@@ -189,7 +188,7 @@ vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int
     while(!s.empty()){
         int cur = s.top();
         s.pop();
-        
+        vis[cur] = 1;
         for(auto neigh : adj[cur]) {
             if(!vis[neigh.to]) {
                 visEdges[neigh.id] = 1;
