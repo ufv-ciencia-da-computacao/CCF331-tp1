@@ -8,7 +8,7 @@ class App {
     private:
     Graph graph;
     bool status = false;
-    
+
     void waitForKeyPressed();
     void displayMenuOptions();
 
@@ -18,7 +18,7 @@ class App {
     void displayVertexNeighbors();
     void displayDfsPath();
     void displayDfsForest();
-    
+
     void displayVertexDegree();
 
 
@@ -58,8 +58,8 @@ void App::initGraphFromTxt() {
     cout << "Nome do Arquivo: ";
     string filename;
     getline(cin, filename);
-    int n = leitura::get_length_txt(filename);
-    vector<Graph::Edge> edgeList = leitura::read_txt(filename);
+    int n = leitura::get_length_txt("/data/txt/" + filename);
+    vector<Graph::Edge> edgeList = leitura::read_txt("/data/txt/" + filename);
 
     graph = Graph(edgeList, n);
     status = true;
@@ -146,43 +146,43 @@ void App::run() {
         case 2:
             displayGraphOrder();
             break;
-        
+
         case 3:
             displayGraphSize();
             break;
-        
+
         case 4:
             displayVertexNeighbors();
             break;
-        
+
         case 5:
             displayVertexDegree();
             break;
-        
+
         case 6:
             displayDfsPath();
             break;
-        
+
         case 7:
             displayDfsForest();
             break;
-        
+
         case 8:
             isArticulation();
             break;
-        
+
         case 9:
             isBridge();
             break;
 
         // case 10:
         //     break;
-        
+
         case 0:
             cout << endl << "Sair" << endl << endl;
             return;
             break;
-        
+
         default:
             return;
             break;
