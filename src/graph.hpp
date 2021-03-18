@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <stack>
 
+#include <iostream>
+
 using namespace std;
 
 class Graph {
@@ -57,7 +59,7 @@ class Graph {
 
         bool operator < (const Adjacent &b) {
             return to < b.to;
-        };
+        }
     };
     vector<vector<Adjacent>> adj;
     int N, M;
@@ -81,7 +83,7 @@ Graph::Graph(vector<Edge> edgeList, int n) {
     }
 
     for(int i=0; i<=N; i++) {
-        sort(adj[i].begin(), adj[i].end());
+        sort(adj[i].rbegin(), adj[i].rend());
     }
 }
 
@@ -165,36 +167,40 @@ bool Graph::bridge(Graph::Edge edge) {
 
 vector<int> Graph::dfs(int from, vector<int> &vis) {
     vector<int> order;
-    stack<int> s;
+    stack<int> s; 
     s.push(from);
 
     while(!s.empty()){
         int cur = s.top();
         s.pop();
+        if(!vis[cur]) order.push_back(cur);
         vis[cur] = 1;
-        order.push_back(cur);
-        for(auto neigh : adj[cur])
-            if(!vis[neigh.to]) s.push(neigh.to);
-
+        for(auto neigh : adj[cur]) {
+            if(!vis[neigh.to]) {
+                s.push(neigh.to);
+            }
+        }
     }
     return order;
 }
 
 vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges){
     vector<Graph::Edge> returnEdges;
-    stack<int> s;
-    s.push(from);
+    stack<pair<int, int>> s;
+    s.push(make_pair(from, -1));
 
     while(!s.empty()){
-        int cur = s.top();
+        auto top = s.top();
         s.pop();
+        int cur = top.first;
+        int id = top.second;
         vis[cur] = 1;
+        if(id != -1) visEdges[id] = 1;
         for(auto neigh : adj[cur]) {
             if(!vis[neigh.to]) {
-                visEdges[neigh.id] = 1;
-                s.push(neigh.to);
+                s.push(make_pair(neigh.to, neigh.id));
             } else if(!visEdges[neigh.id]) {
-                visEdges[neigh.id] = 1;
+                vis[neigh.id] = 1;
                 returnEdges.emplace_back(cur, neigh.to, neigh.weight);
             }
         }
