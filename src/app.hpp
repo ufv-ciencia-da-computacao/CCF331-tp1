@@ -7,7 +7,7 @@
 class App {
     private:
     Graph graph;
-    bool status;
+    bool status = false;
     
     void waitForKeyPressed();
     void displayMenuOptions();
@@ -15,6 +15,9 @@ class App {
     void initGraphFromTxt();
     void displayGraphOrder();
     void displayGraphSize();
+    void displayVertexNeighbors();
+    void displayDfsPath();
+    void displayDfsForest();
     
     void displayVertexDegree();
 
@@ -33,24 +36,33 @@ void App::waitForKeyPressed() {
 }
 
 void App::displayMenuOptions() {
-    cout << endl;
+    system("cls");
     cout << "Menu:" << endl;
     cout << "1 - Inicializar Grafo" << endl;
-    cout << "2 - Ordem do Grafo" << endl;
-    cout << "3 - Tamanho do Grafo" << endl;
-    cout << "4 - Vizinhos de um vertice" << endl;
-    cout << "5 - Grau de um vertice" << endl;
-    cout << "6 - Busca em profundidade" << endl;
-    cout << "7 - Numero e vertices de componentes conexas" << endl;
-    cout << "8 - Verificar se vertice eh articulacao" << endl;
-    cout << "9 - Verificar se aresta eh ponte" << endl;
-    cout << "10 - Execucao automatica" << endl; //Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
+    if(status) {
+        cout << "2 - Ordem do Grafo" << endl;
+        cout << "3 - Tamanho do Grafo" << endl;
+        cout << "4 - Vizinhos de um vertice" << endl;
+        cout << "5 - Grau de um vertice" << endl;
+        cout << "6 - Busca em profundidade" << endl;
+        cout << "7 - Floresta de profundidade" << endl;
+        cout << "8 - Verificar se vertice eh articulacao" << endl;
+        cout << "9 - Verificar se aresta eh ponte" << endl;
+        // cout << "10 - Execucao automatica" << endl; //Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
+    }
     cout << "0 - Sair" << endl;
     cout << ": ";
 }
 
 void App::initGraphFromTxt() {
+    cout << "Nome do Arquivo: ";
+    string filename;
+    getline(cin, filename);
+    int n = leitura::get_length_txt(filename);
+    vector<Graph::Edge> edgeList = leitura::read_txt(filename);
 
+    graph = Graph(edgeList, n);
+    status = true;
 }
 
 void App::displayGraphOrder() {
@@ -59,6 +71,39 @@ void App::displayGraphOrder() {
 
 void App::displayGraphSize() {
     cout << endl << "O tamanho do grafo eh: " << graph.size() << endl << endl;
+}
+
+void App::displayVertexNeighbors() {
+    cout << "Mostrar vizinhos de qual vertice? ";
+    int vertex;
+    cin >> vertex;
+
+    for(int neigh : graph.neighbors(vertex)) {
+        cout << vertex << " conecta ao vertice " << neigh << endl;
+    }
+    cout << endl;
+}
+
+void App::displayDfsPath() {
+    cout << "DFS a partir de qual vertice? ";
+    int vertex;
+    cin >> vertex;
+    vector<int> dfs = graph.dfs(vertex);
+    cout << endl << "O tamanho do caminho eh " << dfs.size() << endl;
+    cout << dfs[0];
+    for(int i=1; i<dfs.size(); i++) cout << " -> " << dfs[i];
+    cout << endl << endl;
+}
+
+void App::displayDfsForest() {
+    vector<vector<int>> forest = graph.connectedComponents();
+    cout << endl << "Existem " << forest.size() << " componentes conexas no grafo" << endl << endl;
+    for(int i=0; i<forest.size(); i++) {
+        cout << "Componente #" << i+1 << " tem tamanho " << forest[i].size() << endl;
+        cout << forest[i][0];
+        for(int j=1; j<forest[i].size(); j++) cout << " -> " << forest[i][j];
+        cout << endl << endl;
+    }
 }
 
 void App::displayVertexDegree() {
@@ -90,6 +135,7 @@ void App::run() {
     while(option != 0) {
         displayMenuOptions();
         cin >> option;
+        cin.ignore();
 
         switch (option)
         {
@@ -106,6 +152,7 @@ void App::run() {
             break;
         
         case 4:
+            displayVertexNeighbors();
             break;
         
         case 5:
@@ -113,9 +160,11 @@ void App::run() {
             break;
         
         case 6:
+            displayDfsPath();
             break;
         
         case 7:
+            displayDfsForest();
             break;
         
         case 8:
@@ -125,18 +174,21 @@ void App::run() {
         case 9:
             isBridge();
             break;
-        
-        case 10:
-            break;
+
+        // case 10:
+        //     break;
         
         case 0:
             cout << endl << "Sair" << endl << endl;
+            return;
             break;
         
         default:
+            return;
             break;
         }
-        //waitForKeyPressed();
+
+        waitForKeyPressed();
     }
 }
 

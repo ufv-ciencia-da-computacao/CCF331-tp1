@@ -1,51 +1,10 @@
-#include <iostream>
-#include <fstream> 
-#include "leitura.hpp"
-#include "graph.hpp"
+#include "app.hpp"
 
-using namespace ::std;
+int main() {
 
-// // void print_graph(vector<Graph::Edge> edge_list) { 
-// //     int v;
-// //     double w; 
+    App app;
 
-// //     for (Graph::Edge e: edge_list)  { 
-// //         if (e.from > e.to) cout << e.from << " " << e.to << " " << e.weight << endl;
-// //         else cout << e.to << " " << e.from << " " << e.weight << endl;
-// //     } 
-// // } 
+    app.run();
 
-int main () {
-    string grafo = "grafo5.txt";
-    int N = leitura::get_length_txt(grafo);
-    vector<Graph::Edge> edge_list = leitura::read_txt(grafo);
-
-    // leitura::edge_list_to_json(edge_list, N, "grafo_out.json");
-    // leitura::edge_list_to_txt(edge_list, N, "grafo_out.txt");
-
-
-    Graph g(edge_list, N);
-
-    vector<Graph::Edge> edg = g.dfsReturnEdges(1);
-
-    cout << edg.size() << endl;
-    for(auto e : edg) {
-        cout << e.from << " " << e.to << endl;
-    }
-
-    // cout << path.size() << endl;
-    // for(int node : path) cout << node << " ";
-    // cout << endl;
+    return 0;
 }
-
-
-// #include "app.hpp"
-
-// int main() {
-
-//     App app;
-
-//     app.run();
-
-//     return 0;
-// }
