@@ -16,8 +16,9 @@ using namespace ::std;
 // // } 
 
 int main () {
-    int N = leitura::get_length_txt("grafo1.txt");
-    vector<Graph::Edge> edge_list = leitura::read_txt("grafo1.txt");
+    string grafo = "grafo5.txt";
+    int N = leitura::get_length_txt(grafo);
+    vector<Graph::Edge> edge_list = leitura::read_txt(grafo);
 
     // leitura::edge_list_to_json(edge_list, N, "grafo_out.json");
     // leitura::edge_list_to_txt(edge_list, N, "grafo_out.txt");
@@ -25,17 +26,16 @@ int main () {
 
     Graph g(edge_list, N);
 
-    vector<Graph::Edge> edg = g.dfsReturnEdges(1); 
-    vector<int> path = g.dfs(1);
+    vector<Graph::Edge> edg = g.dfsReturnEdges(1);
 
     cout << edg.size() << endl;
     for(auto e : edg) {
         cout << e.from << " " << e.to << endl;
     }
 
-    cout << path.size() << endl;
-    for(int node : path) cout << node << " ";
-    cout << endl;
+    // cout << path.size() << endl;
+    // for(int node : path) cout << node << " ";
+    // cout << endl;
 }
 
 

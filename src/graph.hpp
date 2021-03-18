@@ -200,7 +200,7 @@ vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int
             if(!vis[neigh.to]) {
                 s.push(make_pair(neigh.to, neigh.id));
             } else if(!visEdges[neigh.id]) {
-                vis[neigh.id] = 1;
+                visEdges[neigh.id] = 1;
                 returnEdges.emplace_back(cur, neigh.to, neigh.weight);
             }
         }
