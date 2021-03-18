@@ -58,8 +58,8 @@ void App::initGraphFromTxt() {
     cout << "Nome do Arquivo: ";
     string filename;
     getline(cin, filename);
-    int n = leitura::get_length_txt("/data/txt/" + filename);
-    vector<Graph::Edge> edgeList = leitura::read_txt("/data/txt/" + filename);
+    int n = leitura::get_length_txt("data/txt/" + filename);
+    vector<Graph::Edge> edgeList = leitura::read_txt("data/txt/" + filename);
 
     graph = Graph(edgeList, n);
     status = true;
