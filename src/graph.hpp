@@ -41,6 +41,7 @@ class Graph {
     int degree(int vertex);
     vector<int> dfs(int from);
     vector<Edge> dfsReturnEdges(int from);
+    vector<Edge> toEdgeList();
     vector<vector<int>> connectedComponents();
     bool articulation(int vertex);
     bool bridge(Edge edge);
@@ -206,6 +207,18 @@ vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int
         }
     }
     return returnEdges;
+}
+
+vector<Graph::Edge> Graph::toEdgeList() {
+    vector<Edge> edgeList;
+    for(int i=1; i<=N; i++) {
+        for(auto neigh : adj[i]) {
+            if(i <= neigh.to) {
+                edgeList.emplace_back(i, neigh.to, neigh.weight);
+            }
+        }
+    }
+    return edgeList;
 }
 
 #endif
