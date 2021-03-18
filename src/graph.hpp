@@ -6,6 +6,7 @@
 #include <set>
 #include <algorithm>
 #include <unordered_map>
+#include <stack>
 
 using namespace std;
 
@@ -134,7 +135,7 @@ bool Graph::articulation(int vertex) {
 
     for(int i = 1; i <= N; ++i)
         if(!vis[i]) dfs_forest.push_back(dfs(i, vis));
-    
+
     if(dfs_forest.size() > len_origin) return true;
     return false;
 }
@@ -149,28 +150,32 @@ bool Graph::bridge(Graph::Edge edge) {
     for (auto v: orderB) {
         common_path[v] = true;
     }
-    
+
     vector<int> visA (N+1, 0);
     vector<int> orderA;
     visA[edge.to] = 1;
-    orderA = dfs(edge.from, visA); 
+    orderA = dfs(edge.from, visA);
 
     for (auto v: orderA) {
-        if (common_path[v]==true) return false;        
+        if (common_path[v]==true) return false;
     }
-    
+
     return true;
 }
 
 vector<int> Graph::dfs(int from, vector<int> &vis) {
     vector<int> order;
-    vis[from] = 1;
-    order.push_back(from);
-    for(auto neigh : adj[from]) {
-        if(!vis[neigh.to]) {
-            vector<int> path = dfs(neigh.to, vis);
-            order.insert(order.end(), path.begin(), path.end());
-        }
+    stack<int> s;
+    s.push(from);
+
+    while(!s.empty()){
+        int cur = s.top();
+        s.pop();
+        vis[cur] = 1;
+        order.push_back(cur);
+        for(auto neigh : adj[cur])
+            if(!vis[neigh.to]) s.push(neigh.to);
+
     }
     return order;
 }
@@ -178,14 +183,21 @@ vector<int> Graph::dfs(int from, vector<int> &vis) {
 vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges) {
     vis[from] = 1;
     vector<Graph::Edge> returnEdges;
-    for(auto neigh : adj[from]) {
-        if(!vis[neigh.to]) {
-            visEdges[neigh.id] = 1;
-            vector<Graph::Edge> path = dfsReturnEdges(neigh.to, vis, visEdges);
-            returnEdges.insert(returnEdges.end(), path.begin(), path.end());
-        } else if(!visEdges[neigh.id]) {
-            visEdges[neigh.id] = 1;
-            returnEdges.emplace_back(from, neigh.to, neigh.weight);
+    stack<int> s;
+    s.push(from);
+
+    while(!s.empty()){
+        int cur = s.top();
+        s.pop();
+        
+        for(auto neigh : adj[cur]) {
+            if(!vis[neigh.to]) {
+                visEdges[neigh.id] = 1;
+                s.push(neigh.to);
+            } else if(!visEdges[neigh.id]) {
+                visEdges[neigh.id] = 1;
+                returnEdges.emplace_back(cur, neigh.to, neigh.weight);
+            }
         }
     }
     return returnEdges;
