@@ -131,19 +131,8 @@ void edge_list_to_json(vector<Graph::Edge> edge_list, int N, string filename) {
     template_json >> obj;
     
     int counter_edges = 1;
-    set<int> vis;
+    // set<int> vis;
     for (Graph::Edge e: edge_list) {
-        if (vis.find(e.from)==vis.end()) {
-            json node = json {{to_string(e.from), json {{"id", e.from}, {"label", to_string(e.from)}}}};
-            obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
-            vis.insert(e.from);
-        } 
-        if (vis.find(e.to)==vis.end()) {
-            json node = json {{to_string(e.to), json {{"id", e.to}, {"label", to_string(e.to)}}}};
-            obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
-            vis.insert(e.to);
-        }
-
         json json_edge = json{{to_string(counter_edges), json{{"from", e.from}, 
                                                 {"to", e.to}, 
                                                 {"label", to_string(e.weight)}, 
@@ -153,6 +142,11 @@ void edge_list_to_json(vector<Graph::Edge> edge_list, int N, string filename) {
         obj["data"]["edges"]["_data"].insert(json_edge.begin(), json_edge.end());
 
         counter_edges++;                       
+    }
+
+    for(int i=1; i<=N; i++) {
+        json node = json {{to_string(i), json {{"id", i}, {"label", to_string(i)}}}};
+        obj["data"]["nodes"]["_data"].insert(node.begin(), node.end());
     }
 
     obj["data"]["nodes"]["length"] = N;

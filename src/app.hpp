@@ -12,7 +12,8 @@ class App {
     void waitForKeyPressed();
 
     void displayMenuOptions();
-    void displayMenuInit();
+    void displayMenuInitGraph();
+    void displayMenuSaveOptions();
     void initGraphFromTxt();
     void initGraphFromJson();
     void displayGraphOrder();
@@ -25,6 +26,8 @@ class App {
     void isBridge();
     void graphInfo();
     void generateJson();
+    void generateTxt();
+    void exit();
 
     public:
     void run();
@@ -36,6 +39,9 @@ void App::waitForKeyPressed() {
     getchar();
 }
 
+/* 
+    Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
+*/
 void App::displayMenuOptions() {
     system("cls");
     cout << "Menu:" << endl;
@@ -49,20 +55,22 @@ void App::displayMenuOptions() {
         cout << "7 - Floresta de profundidade" << endl;
         cout << "8 - Verificar se vertice eh articulacao" << endl;
         cout << "9 - Verificar se aresta eh ponte" << endl;
-        cout << "10 - Execucao automatica" << endl; //Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
-        cout << "11 - Gerar Json" << endl;
+        cout << "10 - Execucao automatica" << endl; 
+        cout << "11 - Salvar" << endl;
     }
     cout << "0 - Sair" << endl;
     cout << ": ";
 }
 
-void App::displayMenuInit() {
+void App::displayMenuInitGraph() {
+    system("cls");
     cout << "Inicializar com" << endl;
     cout << "1 - Json" << endl;
     cout << "2 - Txt" << endl;
     cout << ": ";
     int option;
     cin >> option;
+    cin.ignore();
     switch (option)
     {
     case 1:
@@ -71,6 +79,29 @@ void App::displayMenuInit() {
 
     case 2:
         initGraphFromTxt();
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void App::displayMenuSaveOptions() {
+    system("cls");
+    cout << "Salvar como" << endl;
+    cout << "1 - Json" << endl;
+    cout << "2 - Txt" << endl;
+    cout << ": ";
+    int option;
+    cin >> option;
+    switch (option)
+    {
+    case 1:
+        generateJson();
+        break;
+
+    case 2:
+        generateTxt();
         break;
     
     default:
@@ -90,7 +121,15 @@ void App::initGraphFromTxt() {
 }
 
 void App::initGraphFromJson() {
-    // to be implemented
+    cout << "Nome do arquivo: ";
+    string filename;
+    cin >> filename;
+
+    vector<Graph::Edge> edgeList = leitura::read_json("data/json/" + filename);
+    int n = leitura::get_length_json("data/json/" + filename);
+
+    graph = Graph(edgeList, n);
+    status = true;
 }
 
 void App::displayGraphOrder() {
@@ -119,7 +158,7 @@ void App::displayDfsPath() {
     vector<int> dfs = graph.dfs(vertex);
     cout << endl << "O tamanho do caminho eh " << dfs.size() << endl;
     cout << dfs[0];
-    for(int i=1; i<dfs.size(); i++) cout << " -> " << dfs[i];
+    for(int i=1; i<dfs.size(); i++) cout << " " << dfs[i];
     cout << endl << endl;
 }
 
@@ -129,7 +168,7 @@ void App::displayDfsForest() {
     for(int i=0; i<forest.size(); i++) {
         cout << "Componente #" << i+1 << " tem tamanho " << forest[i].size() << endl;
         cout << forest[i][0];
-        for(int j=1; j<forest[i].size(); j++) cout << " -> " << forest[i][j];
+        for(int j=1; j<forest[i].size(); j++) cout << " " << forest[i][j];
         cout << endl << endl;
     }
 }
@@ -159,12 +198,32 @@ void App::isBridge() {
 }
 
 void App::graphInfo() {
-    // to be implemented
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+    ofstream file("data/info/" + filename);
+
+    file << "Ordem do grafo: " << graph.order() << endl;
+    file << "Tamanho do grafo: " << graph.size() << endl;
+    file << "Numero de componentes conexas: " << graph.connectedComponents().size() << endl;
 }
 
 void App::generateJson() {
-    // to be implemented
-    // algo tipo... leitura::tojson(graph.toEdgeList(), graph.order());
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+    leitura::edge_list_to_json(graph.toEdgeList(), graph.order(), "data/json/" + filename);
+}
+
+void App::generateTxt() {
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+    leitura::edge_list_to_txt(graph.toEdgeList(), graph.order(), "data/txt/" + filename);
+}
+
+void App::exit() {
+    cout << endl << "Sair" << endl << endl;
 }
 
 void App::run() {
@@ -177,7 +236,7 @@ void App::run() {
         switch (option)
         {
         case 1:
-            initGraphFromTxt();
+            displayMenuInitGraph();
             break;
 
         case 2:
@@ -217,16 +276,15 @@ void App::run() {
             break;
 
         case 11:
-            generateJson();
+            displayMenuSaveOptions();
             break;
 
         case 0:
-            cout << endl << "Sair" << endl << endl;
+            exit();
             return;
             break;
 
         default:
-            return;
             break;
         }
 
