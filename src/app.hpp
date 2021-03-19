@@ -10,20 +10,21 @@ class App {
     bool status = false;
 
     void waitForKeyPressed();
-    void displayMenuOptions();
 
+    void displayMenuOptions();
+    void displayMenuInit();
     void initGraphFromTxt();
+    void initGraphFromJson();
     void displayGraphOrder();
     void displayGraphSize();
     void displayVertexNeighbors();
     void displayDfsPath();
     void displayDfsForest();
-
     void displayVertexDegree();
-
-
     void isArticulation();
     void isBridge();
+    void graphInfo();
+    void generateJson();
 
     public:
     void run();
@@ -48,10 +49,33 @@ void App::displayMenuOptions() {
         cout << "7 - Floresta de profundidade" << endl;
         cout << "8 - Verificar se vertice eh articulacao" << endl;
         cout << "9 - Verificar se aresta eh ponte" << endl;
-        // cout << "10 - Execucao automatica" << endl; //Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
+        cout << "10 - Execucao automatica" << endl; //Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
+        cout << "11 - Gerar Json" << endl;
     }
     cout << "0 - Sair" << endl;
     cout << ": ";
+}
+
+void App::displayMenuInit() {
+    cout << "Inicializar com" << endl;
+    cout << "1 - Json" << endl;
+    cout << "2 - Txt" << endl;
+    cout << ": ";
+    int option;
+    cin >> option;
+    switch (option)
+    {
+    case 1:
+        initGraphFromJson();
+        break;
+
+    case 2:
+        initGraphFromTxt();
+        break;
+    
+    default:
+        break;
+    }
 }
 
 void App::initGraphFromTxt() {
@@ -63,6 +87,10 @@ void App::initGraphFromTxt() {
 
     graph = Graph(edgeList, n);
     status = true;
+}
+
+void App::initGraphFromJson() {
+    // to be implemented
 }
 
 void App::displayGraphOrder() {
@@ -130,6 +158,15 @@ void App::isBridge() {
     else                   cout << endl << "A aresta nao eh ponte!" << endl << endl;
 }
 
+void App::graphInfo() {
+    // to be implemented
+}
+
+void App::generateJson() {
+    // to be implemented
+    // algo tipo... leitura::tojson(graph.toEdgeList(), graph.order());
+}
+
 void App::run() {
     int option = -1;
     while(option != 0) {
@@ -175,8 +212,13 @@ void App::run() {
             isBridge();
             break;
 
-        // case 10:
-        //     break;
+        case 10:
+            graphInfo();
+            break;
+
+        case 11:
+            generateJson();
+            break;
 
         case 0:
             cout << endl << "Sair" << endl << endl;

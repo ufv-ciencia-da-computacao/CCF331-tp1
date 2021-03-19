@@ -168,13 +168,14 @@ bool Graph::bridge(Graph::Edge edge) {
 
 vector<int> Graph::dfs(int from, vector<int> &vis) {
     vector<int> order;
-    stack<int> s; 
+    stack<int> s;
     s.push(from);
 
     while(!s.empty()){
         int cur = s.top();
         s.pop();
-        if(!vis[cur]) order.push_back(cur);
+        if(vis[cur]) continue;
+        order.push_back(cur);
         vis[cur] = 1;
         for(auto neigh : adj[cur]) {
             if(!vis[neigh.to]) {
@@ -195,6 +196,7 @@ vector<Graph::Edge> Graph::dfsReturnEdges(int from, vector<int> &vis, vector<int
         s.pop();
         int cur = top.first;
         int id = top.second;
+        if(vis[cur]) continue;
         vis[cur] = 1;
         if(id != -1) visEdges[id] = 1;
         for(auto neigh : adj[cur]) {
