@@ -226,7 +226,6 @@ vector<Graph::Edge> read_tsplib_format(string filename) {
 
     for (int i = 1; i <= nodes.size(); i++) {
         for (int j = i+1; j <= nodes.size(); j++) {
-            cout << i << j;
             int vertice_from = i;
             int vertice_to = j;
             int weight = euclidean_distance(nodes[i], nodes[j]);
