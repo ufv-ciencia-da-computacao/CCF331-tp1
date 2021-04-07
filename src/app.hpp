@@ -14,6 +14,7 @@ class App {
     void displayMenuOptions();
     void displayMenuInitGraph();
     void displayMenuSaveOptions();
+    void initGraphFromTsp();
     void initGraphFromTxt();
     void initGraphFromJson();
     void displayGraphOrder();
@@ -67,6 +68,7 @@ void App::displayMenuInitGraph() {
     cout << "Inicializar com" << endl;
     cout << "1 - Json" << endl;
     cout << "2 - Txt" << endl;
+    cout << "3 - TSP" <<  endl;
     cout << ": ";
     int option;
     cin >> option;
@@ -81,6 +83,10 @@ void App::displayMenuInitGraph() {
         initGraphFromTxt();
         break;
     
+    case 3: 
+        initGraphFromTsp();
+        break;
+
     default:
         break;
     }
@@ -107,6 +113,16 @@ void App::displayMenuSaveOptions() {
     default:
         break;
     }
+}
+
+void App::initGraphFromTsp() {
+    cout << "Nome do arquivo: ";
+    string filename;
+    getline(cin, filename);
+    vector<Graph::Edge> edge_list = leitura::read_tsplib_format("data/tsplib/" + filename);
+    int n  = leitura::get_length_from_tsp_format("data/tsplib/" + filename);
+    graph = Graph(edge_list, n);
+    status = true;
 }
 
 void App::initGraphFromTxt() {

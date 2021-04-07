@@ -164,5 +164,81 @@ void edge_list_to_json(vector<Graph::Edge> edge_list, int N, string filename) {
     template_json.close();
 }
 
+int euclidean_distance(pair<int, int> point_a, pair<int, int> point_b) {
+    double xd = point_b.first-point_a.first;
+    double yd = point_b.second-point_a.second;
+    return (int) round(sqrt(xd*xd + yd*yd));
+}
+
+int get_length_from_tsp_format(string filename) {
+    ifstream infile;
+    infile.open(filename);
+
+    vector<Graph::Edge> edge_list;
+    vector<pair<int, int>> nodes;
+    int dimension;
+    if (infile.is_open()) {
+        string line;
+        
+        getline(infile, line); // NAME
+        getline(infile, line); // TYPE
+        getline(infile, line); // COMMENT
+        getline(infile, line); // DIMENSION
+        
+        stringstream ss(line);
+        string description;
+
+        ss >> description >> dimension;
+    }
+    infile.close();
+    return dimension;
+}
+
+vector<Graph::Edge> read_tsplib_format(string filename) {
+    ifstream infile;
+    infile.open(filename);
+
+    vector<Graph::Edge> edge_list;
+    vector<pair<int, int>> nodes;
+
+    if (infile.is_open()) {
+        string line;
+        
+        getline(infile, line); // NAME
+        getline(infile, line); // TYPE
+        getline(infile, line); // COMMENT
+        getline(infile, line); // DIMENSION
+        getline(infile, line); // EDGE_WEIGHT_TYPE
+        getline(infile, line); // NODE_COORD_SECTION
+
+        getline(infile, line);
+        while (line.compare("EOF") != 0) {
+            stringstream ss(line);
+            int vertice;
+            double x;
+            double y;
+
+            ss >> vertice >> x >> y;
+            nodes.push_back(make_pair(x, y));
+            getline(infile, line);
+        }
+    }
+
+    for (int i = 1; i <= nodes.size(); i++) {
+        for (int j = i+1; j <= nodes.size(); j++) {
+            cout << i << j;
+            int vertice_from = i;
+            int vertice_to = j;
+            int weight = euclidean_distance(nodes[i], nodes[j]);
+
+            edge_list.emplace_back(vertice_from, vertice_to, weight);
+        }
+    }
+    
+
+    infile.close();
+    return edge_list;
+}
+
 }
 #endif
