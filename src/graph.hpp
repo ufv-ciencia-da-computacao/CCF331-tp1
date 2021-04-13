@@ -45,6 +45,7 @@ class Graph {
     vector<vector<int>> connectedComponents();
     bool articulation(int vertex);
     bool bridge(Edge edge);
+    vector<int> closestNeighborHeuristic(int vertex);
 
     private:
     struct Adjacent {
@@ -67,6 +68,7 @@ class Graph {
 
     vector<int> dfs(int from, vector<int> &vis);
     vector<Edge> dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges);
+    void sortAdjacentListByWeight(vector<Adjacent> &array);
 };
 
 Graph::Graph() {
@@ -83,6 +85,7 @@ Graph::Graph(vector<Edge> edgeList, int n) {
         adj[e.to].emplace_back(e.from, e.weight, i);
     }
 
+    // OBS: elements are sorted in decreasing order
     for(int i=0; i<=N; i++) {
         sort(adj[i].rbegin(), adj[i].rend());
     }
@@ -221,6 +224,52 @@ vector<Graph::Edge> Graph::toEdgeList() {
         }
     }
     return edgeList;
+}
+
+vector<int> Graph::closestNeighborHeuristic(int vertex) {
+    vector<int> vis(N+1, 0);
+    vis[vertex] = 1;
+    vector<int> order;
+    order.push_back(vertex);
+    vector<Adjacent> list;
+    int end = 0;
+    while(!end) {
+        list = adj[vertex];
+        sortAdjacentListByWeight(list);
+        end = 1;
+        for(auto neigh : list) {
+            if(!vis[neigh.to]) {
+                vertex = neigh.to;
+                vis[vertex] = 1;
+                end=0;
+                order.push_back(vertex);
+                break;
+            }
+        }
+    }
+    return order;
+}
+
+void Graph::sortAdjacentListByWeight(vector<Adjacent> &array) {
+    if(array.size() <= 1) return;
+    vector<Adjacent> left, right;
+    for(int i=0; i<array.size(); i++) {
+        if(2*i < array.size()) left.push_back(array[i]);
+        else right.push_back(array[i]);
+    }
+    sortAdjacentListByWeight(left);
+    sortAdjacentListByWeight(right);
+    int l=0, r=0;
+    for(int i=0; i<array.size(); i++) {
+        if(l < left.size() and r < right.size()) {
+            if(left[l].weight < right[r].weight) array[i] = left[l++];
+            else array[i] = right[r++];
+        } else if(l < left.size()) {
+            array[i] = left[l++];
+        } else {
+            array[i] = right[r++];
+        }
+    }
 }
 
 #endif
