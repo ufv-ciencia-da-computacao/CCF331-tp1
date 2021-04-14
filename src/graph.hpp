@@ -47,6 +47,9 @@ class Graph {
     bool bridge(Edge edge);
     vector<int> closestNeighborHeuristic(int vertex);
 
+    int gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase);
+    void alg3opt(vector<int>& order);
+
     private:
     struct Adjacent {
         int to;
@@ -270,6 +273,138 @@ void Graph::sortAdjacentListByWeight(vector<Adjacent> &array) {
             array[i] = right[r++];
         }
     }
+}
+
+void reverseSegment(vector<int>& order, int startIndex, int endIndex) {
+    int left, right;
+    int N = order.size();
+
+    int inversionSize = ((N + endIndex - startIndex + 1) % N)/2;
+
+    left = startIndex; right = endIndex;
+
+    for (int i = 1; i <= inversionSize; i++) {
+        int aux = order[left];
+        order[left] = order[right];
+        order[right] = aux;
+
+        left = (left+1)%N;
+        right = (N+right-1)%N;
+    }  
+}
+
+int Graph::gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase) {
+    int deleteLength, addLength;
+
+    switch (optcase) {
+        case 0:
+            deleteLength = 0;
+            addLength = 0;
+            break;
+        case 1:
+            deleteLength = adj[x1][x2].weight + adj[z1][z2].weight;
+            addLength = adj[x1][z1].weight + adj[x2][z2].weight;
+            break;
+        case 2:
+            deleteLength = adj[y1][y2].weight + adj[z1][z2].weight;
+            addLength = adj[y1][z1].weight + adj[y2][z2].weight;
+            break;
+        case 3:
+            deleteLength = adj[x1][x2].weight + adj[y1][y2].weight;
+            addLength = adj[x1][y1].weight + adj[x2][y2].weight;
+            break;
+        case 4:
+            deleteLength = adj[x1][x2].weight + adj[y1][y2].weight + adj[z1][z2].weight;
+            addLength = adj[x1][y1].weight + adj[x2][z2].weight + adj[y2][z1].weight;
+            break;
+        case 5:
+            deleteLength = adj[x1][x2].weight + adj[y1][y2].weight + adj[z1][z2].weight;
+            addLength = adj[x1][z1].weight + adj[y2][x2].weight + adj[y1][z2].weight;
+            break;
+        case 6:
+            deleteLength = adj[x1][x2].weight + adj[y1][y2].weight + adj[z1][z2].weight;
+            addLength = adj[x1][y2].weight + adj[z1][y1].weight + adj[x2][z2].weight;
+            break;
+        case 7:
+            deleteLength = adj[x1][x2].weight + adj[y1][y2].weight + adj[z1][z2].weight;
+            addLength = adj[x1][y2].weight + adj[z1][x2].weight + adj[y1][z2].weight;
+            break;
+    }
+
+    return deleteLength-addLength;
+}
+
+void make3OptMove(vector<int>& order, int i, int j, int k, int optcase) {
+    int N = order.size();
+    
+    switch (optcase) {
+        case 1:
+            reverseSegment(order, (k+1)%N, i);
+            break;
+        case 2:
+            reverseSegment(order, (j+1)%N, k);
+            break;
+        case 3:
+            reverseSegment(order, (i+1)%N, j);
+            break;
+        case 4:
+            reverseSegment(order, (i+1)%N, j);
+            reverseSegment(order, (j+1)%N, k);
+            break;
+        case 5:
+            reverseSegment(order, (k+1)%N, i);
+            reverseSegment(order, (i+1)%N, j);
+            break;
+        case 6:
+            reverseSegment(order, (k+1)%N, i);
+            reverseSegment(order, (j+1)%N, k);
+            break;
+        case 7:
+            reverseSegment(order, (k+1)%N, i);
+            reverseSegment(order, (i+1)%N, j);
+            reverseSegment(order, (j+1)%N, k);
+            break;
+    }
+}
+
+void Graph::alg3opt(vector<int>& order) {
+    int N = order.size();
+    bool locallyOptimal = false;
+    int i, j, k;
+    int x1, x2, y1, y2, z1, z2;
+    int optCase;
+    int moveGain;
+
+    while (!locallyOptimal) {
+        locallyOptimal = true;
+        for (int i = 0; i < N; i++) {
+            x1 = order[i];
+            x2 = order[i+1%N];
+
+            for (int counter2 = 1; counter2 < N-2; counter2++) {
+                j = (i+counter2)%N;
+                y1 = order[j];
+                y1 = order[(j+1)%N];
+
+                for (int counter3 = counter2+1; counter3 < N; counter3++) {
+                    k = (i+counter3) %N;
+                    z1 = order[k];
+                    z1 = order[(k+1) %N];
+
+                    for (int optCase = 1; optCase < 8; optCase++) {
+                        moveGain = gainFrom3Opt(x1, x2, y1, y2, z1, z2, optCase);
+
+                        if (moveGain > 0) {
+                            make3OptMove(order, i, j, k, optCase);
+                            locallyOptimal = false;
+                            break;
+                        }
+                    }   
+                }
+            }           
+        } 
+    }
+    
 }
 
 #endif
