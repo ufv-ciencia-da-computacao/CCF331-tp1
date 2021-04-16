@@ -46,6 +46,7 @@ class Graph {
     bool articulation(int vertex);
     bool bridge(Edge edge);
     vector<int> closestNeighborHeuristic(int vertex);
+    vector<int> savingsHeuristic(int vertex);
 
     private:
     struct Adjacent {
@@ -69,6 +70,7 @@ class Graph {
     vector<int> dfs(int from, vector<int> &vis);
     vector<Edge> dfsReturnEdges(int from, vector<int> &vis, vector<int> &visEdges);
     void sortAdjacentListByWeight(vector<Adjacent> &array);
+    void sortEdgeListByWeight(vector<Edge> &array);
 };
 
 Graph::Graph() {
@@ -264,6 +266,119 @@ void Graph::sortAdjacentListByWeight(vector<Adjacent> &array) {
         if(l < left.size() and r < right.size()) {
             if(left[l].weight < right[r].weight) array[i] = left[l++];
             else array[i] = right[r++];
+        } else if(l < left.size()) {
+            array[i] = left[l++];
+        } else {
+            array[i] = right[r++];
+        }
+    }
+}
+
+// Requires a complete graph
+vector<int> Graph::savingsHeuristic(int vertex) {
+    
+    vector<int> order;
+    vector<Edge> temp;
+    vector<Edge> savings;
+    vector<Adjacent> list;
+    int I[N+1][N+1];
+    int matEdges[N+1][N+1];    
+
+    for(int i=0; i<=N; i++) {
+        for(int j=0; j<=N; j++) {
+            I[i][j] = 0;
+            matEdges[i][j] = 0;
+        }
+        I[1][i] = 2;
+    }
+    
+    for(int i=1; i<=N; i++) {
+        list = adj[i];
+        for(int j=0; j<list.size(); j++) {
+            matEdges[i][list[j].to] = list[j].weight;
+        }
+    }
+
+    for(int i=1; i<=N; i++) {
+        for(int j=i+1; j<=N; j++) {
+            savings.emplace_back(i, j, matEdges[1][i] + matEdges[1][j] - matEdges[i][j]);
+        }
+    }
+
+    sortEdgeListByWeight(savings);
+
+    int s = N-1;
+    while(savings.size()>0) {
+        if(I[1][savings[0].from]>0 && I[1][savings[0].to]>0) {
+            --I[1][savings[0].from];
+            --I[1][savings[0].to];
+            ++I[savings[0].from][savings[0].to];
+            --s;
+        }
+        savings.erase(savings.begin());
+
+        if(s==1) break;
+    }
+
+    for(int i=1; i<=N; i++) {
+        for(int j=i+1; j<=N; j++) {
+            if(I[i][j]==1) {
+                temp.emplace_back(i, j, 0);
+            }
+        }
+    }
+
+    // What is the best way to return this matrix? (Starting from vertex)
+    /*for(int i=1; i<=N; i++) {
+        for(int j=1; j<=N; j++) {
+            if(j<=i) cout << "  ";
+            else     cout << I[i][j] << " ";
+        }
+        cout << endl;
+    }*/
+
+    // Proposed way
+    int comp = vertex, flag;
+    while(order.size()<N) {
+        flag = 0;
+        for(int i=0; i<temp.size(); i++) {
+            if(temp[i].from == comp) {
+                order.push_back(comp);
+                comp = temp[i].to;
+                flag=1;
+                temp.erase(temp.begin()+i);
+                break;
+            }
+        }
+        if(flag==1) continue;
+        for(int i=0; i<temp.size(); i++) {
+            if(temp[i].to == comp) {
+                order.push_back(comp);
+                comp = temp[i].from;
+                temp.erase(temp.begin()+i);
+                break;
+            }
+        }
+    }
+
+    return order;
+
+}
+
+void Graph::sortEdgeListByWeight(vector<Edge> &array) {
+    if(array.size() <= 1) return;
+    vector<Edge> left, right;
+    for(int i=0; i<array.size(); i++) {
+        if(2*i < array.size()) left.push_back(array[i]);
+        else right.push_back(array[i]);
+    }
+    sortEdgeListByWeight(left);
+    sortEdgeListByWeight(right);
+    int l=0, r=0;
+    for(int i=0; i<array.size(); i++) {
+        if(l < left.size() and r < right.size()) {
+            if(left[l].weight > right[r].weight) array[i] = left[l++];
+            else                                 array[i] = right[r++];
         } else if(l < left.size()) {
             array[i] = left[l++];
         } else {
