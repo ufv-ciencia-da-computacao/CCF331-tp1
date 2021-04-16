@@ -281,14 +281,10 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     vector<Edge> temp;
     vector<Edge> savings;
     vector<Adjacent> list;
-    int I[N+1][N+1];
-    int matEdges[N+1][N+1];    
+    int I[N+1][N+1] = {};
+    int matEdges[N+1][N+1] = {};
 
-    for(int i=0; i<=N; i++) {
-        for(int j=0; j<=N; j++) {
-            I[i][j] = 0;
-            matEdges[i][j] = 0;
-        }
+    for(int i=1; i<=N; i++) {
         I[1][i] = 2;
     }
     
@@ -308,18 +304,25 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     sortEdgeListByWeight(savings);
 
     int s = N-1;
-    while(savings.size()>0) {
-        if(I[1][savings[0].from]>0 && I[1][savings[0].to]>0) {
-            --I[1][savings[0].from];
-            --I[1][savings[0].to];
-            ++I[savings[0].from][savings[0].to];
+    for(int i=0; i<savings.size(); i++) {
+        if(I[1][savings[i].from]>0 && I[1][savings[i].to]>0) {
+            --I[1][savings[i].from];
+            --I[1][savings[i].to];
+            ++I[savings[i].from][savings[i].to];
             --s;
         }
-        savings.erase(savings.begin());
-
         if(s==1) break;
     }
 
+    // What is the best way to return this matrix? (Starting from vertex)
+    /*for(int i=1; i<=N; i++) {
+        for(int j=1; j<=N; j++) {
+            cout << I[i][j] << " ";
+        }
+        cout << endl;
+    }*/
+
+    // Proposed way
     for(int i=1; i<=N; i++) {
         for(int j=i+1; j<=N; j++) {
             if(I[i][j]==1) {
@@ -328,16 +331,6 @@ vector<int> Graph::savingsHeuristic(int vertex) {
         }
     }
 
-    // What is the best way to return this matrix? (Starting from vertex)
-    /*for(int i=1; i<=N; i++) {
-        for(int j=1; j<=N; j++) {
-            if(j<=i) cout << "  ";
-            else     cout << I[i][j] << " ";
-        }
-        cout << endl;
-    }*/
-
-    // Proposed way
     int comp = vertex, flag;
     while(order.size()<N) {
         flag = 0;
