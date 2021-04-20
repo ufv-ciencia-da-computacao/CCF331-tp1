@@ -48,6 +48,8 @@ class Graph {
     vector<int> closestNeighborHeuristic(int vertex);
     vector<int> savingsHeuristic(int vertex);
 
+    void alg3opt(vector<int>& order);
+
     private:
     struct Adjacent {
         int to;
@@ -378,6 +380,145 @@ void Graph::sortEdgeListByWeight(vector<Edge> &array) {
             array[i] = right[r++];
         }
     }
+}
+
+void reverseSegment(vector<int>& order, int startIndex, int endIndex) {
+    int left, right;
+    int N = order.size();
+
+    int inversionSize = ((N + endIndex - startIndex + 1) % N)/2;
+
+    left = startIndex; right = endIndex;
+    for (int i = 1; i <= inversionSize; i++) {
+        int aux = order[left];
+        order[left] = order[right];
+        order[right] = aux;
+
+        left = (left+1)%N;
+        right = (N+right-1)%N;
+    }  
+}
+
+int gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase, vector<vector<int>> matEdges) {
+    int deleteLength, addLength;
+
+    switch (optcase) {
+        case 0:
+            deleteLength = 0;
+            addLength = 0;
+            break;
+        case 1:
+            deleteLength = matEdges[x1][x2] + matEdges[z1][z2];
+            addLength = matEdges[x1][z1] + matEdges[x2][z2];
+            break;
+        case 2:
+            deleteLength = matEdges[y1][y2] + matEdges[z1][z2];
+            addLength = matEdges[y1][z1] + matEdges[y2][z2];
+            break;
+        case 3:
+            deleteLength = matEdges[x1][x2] + matEdges[y1][y2];
+            addLength = matEdges[x1][y1] + matEdges[x2][y2];
+            break;
+        case 4:
+            deleteLength = matEdges[x1][x2] + matEdges[y1][y2] + matEdges[z1][z2];
+            addLength = matEdges[x1][y1] + matEdges[x2][z1] + matEdges[y2][z2];
+            break;
+        case 5:
+            deleteLength = matEdges[x1][x2] + matEdges[y1][y2] + matEdges[z1][z2];
+            addLength = matEdges[x1][z1] + matEdges[y2][x2] + matEdges[y1][z2];
+            break;
+        case 6:
+            deleteLength = matEdges[x1][x2] + matEdges[y1][y2] + matEdges[z1][z2];
+            addLength = matEdges[x1][y2] + matEdges[z1][y1] + matEdges[x2][z2];
+            break;
+        case 7:
+            deleteLength = matEdges[x1][x2] + matEdges[y1][y2] + matEdges[z1][z2];
+            addLength = matEdges[x1][y2] + matEdges[z1][x2] + matEdges[y1][z2];
+            break;
+    }
+
+    return deleteLength-addLength;
+}
+
+void make3OptMove(vector<int>& order, int i, int j, int k, int optcase) {
+    int N = order.size();
+    
+    switch (optcase) {
+        case 1:
+            reverseSegment(order, (k+1)%N, i);
+            break;
+        case 2:
+            reverseSegment(order, (j+1)%N, k);
+            break;
+        case 3:
+            reverseSegment(order, (i+1)%N, j);
+            break;
+        case 4:
+            reverseSegment(order, (j+1)%N, k);
+            reverseSegment(order, (i+1)%N, j);
+            break;
+        case 5:
+            reverseSegment(order, (k+1)%N, i);
+            reverseSegment(order, (i+1)%N, j);
+            break;
+        case 6:
+            reverseSegment(order, (k+1)%N, i);
+            reverseSegment(order, (j+1)%N, k);
+            break;
+        case 7:
+            reverseSegment(order, (k+1)%N, i);
+            reverseSegment(order, (i+1)%N, j);
+            reverseSegment(order, (j+1)%N, k);
+            break;
+    }
+}
+
+void Graph::alg3opt(vector<int>& order) {
+    bool locallyOptimal = false;
+    int i, j, k;
+    int x1, x2, y1, y2, z1, z2;
+    int optCase[7] = {1, 2, 3, 4, 5, 6, 7};
+    int moveGain;
+    
+    vector<vector<int>> matEdges(N+1, vector<int>(N+1));
+    vector<Adjacent> list;
+
+    for(int i=1; i<=N; i++) {
+        list = adj[i];
+        for(int j=0; j<list.size(); j++) {
+            matEdges[i][list[j].to] = list[j].weight;
+        }
+    }
+
+    while (!locallyOptimal) {
+        locallyOptimal = true;
+        for (int i = 0; i <= N-1; i++) {
+            x1 = order[i];
+            x2 = order[(i+1)%N];
+
+            for (int counter2 = 1; counter2 <= N-3; counter2++) {
+                j = (i+counter2)%N;
+                y1 = order[j];
+                y2 = order[(j+1)%N];
+
+                for (int counter3 = counter2+1; counter3 <= N-1; counter3++) {
+                    k = (i+counter3) %N;
+                    z1 = order[k];
+                    z2 = order[(k+1) %N];
+
+                    for (int l = 0; l < 6; l++) {
+                        moveGain = gainFrom3Opt(x1, x2, y1, y2, z1, z2, optCase[l], matEdges);
+                        if (moveGain > 0) {
+                            make3OptMove(order, i, j, k, optCase[l]);
+                            locallyOptimal = false;
+                            break;
+                        }
+                    }   
+                }
+            }           
+        } 
+    }
+    
 }
 
 #endif

@@ -11,13 +11,22 @@ int main() {
     // edgeList.emplace_back(3, 4, 4);
     // Graph g(edgeList, 4);
 
-    // for(int x : g.closestNeighborHeuristic(1)) {
+    // vector<int> order = g.closestNeighborHeuristic(1);
+
+    // for(int x : order) {
     //     cout << x << " ";
     // }
     // cout << endl;
 
-    App app;
-    app.run();
+    // g.alg3opt(order);
+
+    // for(int x : order) {
+    //     cout << x << " ";
+    // }
+    // cout << endl;
+
+    // App app;
+    // app.run();
 
     return 0;
 }
