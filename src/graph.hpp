@@ -553,7 +553,7 @@ bool Graph::alg2opt(vector<int>& order){
             
             if(moveGain > 0){
                 make2OptMove(order, i, j);
-                anyBetterMove = false;
+                anyBetterMove = true;
                 break;
             }
         }

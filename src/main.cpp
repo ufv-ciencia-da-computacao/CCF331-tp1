@@ -33,8 +33,8 @@ int main() {
     //     cout << endl<< endl;
     // }while(next_permutation(aux.begin(), aux.end()));
 
-    // App app;
-    // app.run();
+    App app;
+    app.run();
 
     return 0;
 }

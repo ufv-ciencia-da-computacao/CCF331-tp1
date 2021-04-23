@@ -31,7 +31,7 @@ class App {
     void graphInfo();
     void displayMenuContructiveAlgorithms();
     void displayMenuImprovementAlgorithms();
-    void apllyClosestNeighbor();
+    void applyClosestNeighbor();
     void applySavings();
     void apply2Opt();
     void apply3Opt();
@@ -245,11 +245,11 @@ void App::displayMenuContructiveAlgorithms() {
     vector<int> order;
     switch(option) {
         case 1:
-            
+            applyClosestNeighbor();
             break;
 
         case 2:
-
+            applySavings();
             break;
 
         default:
@@ -272,11 +272,11 @@ void App::displayMenuImprovementAlgorithms() {
     cin >> option;
     switch(option) {
         case 1:
-
+            apply2Opt();
             break;
 
         case 2:
-
+            apply3Opt();
             break;
 
         default:
@@ -288,12 +288,18 @@ void App::displayMenuImprovementAlgorithms() {
 
 }
 
-void App::apllyClosestNeighbor() {
+void App::applyClosestNeighbor() {
     cout << "Vertice de inicio: ";
     int vertex;
     cin >> vertex;
 
     vector<int> order = graph.closestNeighborHeuristic(vertex);
+
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+
+    // write to file
 }
 
 void App::applySavings() {
@@ -302,6 +308,12 @@ void App::applySavings() {
     cin >> vertex;
 
     vector<int> order = graph.savingsHeuristic(vertex);
+
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+
+    // write to file
 }
 
 void App::apply2Opt() {
@@ -325,7 +337,10 @@ void App::apply2Opt() {
     }
     t.stop();
 
-    // save to output file
+    cout << "Arquivo de saida: ";
+    cin >> filename;
+
+    // write to file
 }
 
 void App::apply3Opt() {
@@ -348,6 +363,11 @@ void App::apply3Opt() {
         }
     }
     t.stop();
+
+    cout << "Arquivo de saida: ";
+    cin >> filename;
+
+    // write to file
 
     // save to output file
 }
