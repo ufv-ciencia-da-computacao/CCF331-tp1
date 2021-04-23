@@ -48,6 +48,7 @@ class Graph {
     vector<int> closestNeighborHeuristic(int vertex);
     vector<int> savingsHeuristic(int vertex);
     bool alg3opt(vector<int>& order);
+    bool alg2opt(vector<int>& order);
 
     private:
     struct Adjacent {
@@ -529,7 +530,7 @@ void make2OptMove(vector<int> &order, int i, int j){
     reverseSegment(order, (i + 1) % N, j);
 }
 
-void Graph::alg2opt(vector<int>&order){
+bool Graph::alg2opt(vector<int>& order){
     vector<vector<int>> matEdges(N+1, vector<int>(N+1));
     vector<Adjacent> list;
 
@@ -540,28 +541,23 @@ void Graph::alg2opt(vector<int>&order){
         }
     }
 
-    bool locallyOptimal = false;
+    bool anyBetterMove = false;
+    for (int i = 1; i <= N - 3; ++i){
+        int x1 = order[i];
+        int x2 = order[(i+1) % N];
 
-    while (!locallyOptimal){
-        locallyOptimal = true;
-        for (int i = 1; i <= N - 3; ++i){
-            int x1 = order[i];
-            int x2 = order[(i+1) % N];
-
-            for(int j = i + 2; j <= (i == 1? N - 2 : N - 1); ++j) {
-                int y1 = order[j];
-                int y2 = order[(j + 1) % N];
-                int moveGain = gainFrom2Opt(x1, x2, y1, y2, matEdges);
-                if(moveGain > 0){
-                    make2OptMove(order, i, j);
-                    locallyOptimal = false;
-                    break;
-                }
+        for(int j = i + 2; j <= (i == 1? N - 2 : N - 1); ++j) {
+            int y1 = order[j];
+            int y2 = order[(j + 1) % N];
+            int moveGain = gainFrom2Opt(x1, x2, y1, y2, matEdges);
+            if(moveGain > 0){
+                make2OptMove(order, i, j);
+                anyBetterMove = true;
+                break;
             }
-            if(!locallyOptimal) break;
         }
     }
->>>>>>> acc3c51ac2b47d48d67171b2580bf97644b40af5
+    return anyBetterMove;
 }
 
 #endif
