@@ -5,39 +5,33 @@
 using namespace std;
 
 int main() {
-
-    Timer max_time(0, 1, 0);
-    Timer t;
-    int cntIterations = -1;
-    t.start();
-    while(t <= max_time and cntIterations <= 10) {
-    }
-    t.stop();
-
-    cout << t << endl;
-
+    //
     // vector<Graph::Edge> edgeList;
-    // edgeList.emplace_back(1, 2, 1);
-    // edgeList.emplace_back(1, 3, 2);
-    // edgeList.emplace_back(1, 4, 3);
-    // edgeList.emplace_back(2, 3, 7);
-    // edgeList.emplace_back(2, 4, 1);
-    // edgeList.emplace_back(3, 4, 4);
+    // edgeList.emplace_back(1, 2, 4);
+    // edgeList.emplace_back(2, 3, 3);
+    // edgeList.emplace_back(3, 4, 11);
+    // edgeList.emplace_back(4, 1, 213);
+    // edgeList.emplace_back(1, 3, 4);
+    // edgeList.emplace_back(2, 4, 10000);
+    //
+    //
     // Graph g(edgeList, 4);
-
-    // vector<int> order = g.closestNeighborHeuristic(1);
-
-    // for(int x : order) {
-    //     cout << x << " ";
-    // }
-    // cout << endl;
-
-    // g.alg3opt(order);
-
-    // for(int x : order) {
-    //     cout << x << " ";
-    // }
-    // cout << endl;
+    //
+    // vector<int> aux = {1, 2, 3, 4};
+    // do{
+    //     vector<int> order = aux;
+    //     for(int x : order) {
+    //          cout << x << " ";
+    //     }
+    //     cout << endl;
+    //
+    //     g.alg2opt(order);
+    //
+    //     for(int x : order) {
+    //          cout << x << " ";
+    //     }
+    //     cout << endl<< endl;
+    // }while(next_permutation(aux.begin(), aux.end()));
 
     // App app;
     // app.run();

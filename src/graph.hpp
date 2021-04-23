@@ -520,21 +520,21 @@ bool Graph::alg3opt(vector<int>& order) {
 }
 
 int gainFrom2Opt(int x1, int x2, int y1, int y2, vector<vector<int>> matEdges){
-    int addLength = matEdges[x1][y1] + matEdges[x2][y2];
     int deleteLength = matEdges[x1][x2] + matEdges[y1][y2];
+    int addLength = matEdges[x1][y1] + matEdges[x2][y2];
 
     return deleteLength - addLength;
 }
 
 void make2OptMove(vector<int> &order, int i, int j){
-    reverseSegment(order, (i + 1) % N, j);
+    reverseSegment(order, (i + 1) % order.size(), j);
 }
 
 bool Graph::alg2opt(vector<int>& order){
     vector<vector<int>> matEdges(N+1, vector<int>(N+1));
     vector<Adjacent> list;
 
-    for(int i = 1; i<=N; ++i) {
+    for(int i = 1; i <=N; ++i) {
         list = adj[i];
         for(int j = 0; j < list.size(); ++j) {
             matEdges[i][list[j].to] = list[j].weight;
@@ -542,17 +542,18 @@ bool Graph::alg2opt(vector<int>& order){
     }
 
     bool anyBetterMove = false;
-    for (int i = 1; i <= N - 3; ++i){
+    for (int i = 0; i <= N - 3; ++i){
         int x1 = order[i];
         int x2 = order[(i+1) % N];
 
-        for(int j = i + 2; j <= (i == 1? N - 2 : N - 1); ++j) {
+        for(int j = i + 2; j <= (i == 0? N - 2 : N - 1); ++j) {
             int y1 = order[j];
             int y2 = order[(j + 1) % N];
             int moveGain = gainFrom2Opt(x1, x2, y1, y2, matEdges);
+            
             if(moveGain > 0){
                 make2OptMove(order, i, j);
-                anyBetterMove = true;
+                anyBetterMove = false;
                 break;
             }
         }
