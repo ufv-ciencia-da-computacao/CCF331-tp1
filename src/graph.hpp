@@ -278,7 +278,7 @@ void Graph::sortAdjacentListByWeight(vector<Adjacent> &array) {
 
 // Requires a complete graph
 vector<int> Graph::savingsHeuristic(int vertex) {
-    
+
     vector<int> order;
     vector<Edge> temp;
     vector<Edge> savings;
@@ -289,7 +289,7 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     for(int i=1; i<=N; i++) {
         I[1][i] = 2;
     }
-    
+
     for(int i=1; i<=N; i++) {
         list = adj[i];
         for(int j=0; j<list.size(); j++) {
@@ -396,7 +396,7 @@ void reverseSegment(vector<int>& order, int startIndex, int endIndex) {
 
         left = (left+1)%N;
         right = (N+right-1)%N;
-    }  
+    }
 }
 
 int gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase, vector<vector<int>> matEdges) {
@@ -442,7 +442,7 @@ int gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase, ve
 
 void make3OptMove(vector<int>& order, int i, int j, int k, int optcase) {
     int N = order.size();
-    
+
     switch (optcase) {
         case 1:
             reverseSegment(order, (k+1)%N, i);
@@ -479,7 +479,7 @@ void Graph::alg3opt(vector<int>& order) {
     int x1, x2, y1, y2, z1, z2;
     int optCase[7] = {1, 2, 3, 4, 5, 6, 7};
     int moveGain;
-    
+
     vector<vector<int>> matEdges(N+1, vector<int>(N+1));
     vector<Adjacent> list;
 
@@ -513,12 +513,56 @@ void Graph::alg3opt(vector<int>& order) {
                             locallyOptimal = false;
                             break;
                         }
-                    }   
+                    }
                 }
-            }           
-        } 
+            }
+        }
     }
-    
+}
+
+int gainFrom2Opt(int x1, int x2, int y1, int y2, vector<vector<int>> matEdges){
+    int addLength = matEdges[x1][y1] + matEdges[x2][y2];
+    int deleteLength = matEdges[x1][x2] + matEdges[y1][y2];
+
+    return deleteLength - addLength;
+}
+
+void make2OptMove(vector<int> &order, int i, int j){
+    reverseSegment(order, (i + 1) % N, j);
+}
+
+void Graph::alg2opt(vector<int>&order){
+    vector<vector<int>> matEdges(N+1, vector<int>(N+1));
+    vector<Adjacent> list;
+
+    for(int i = 1; i<=N; ++i) {
+        list = adj[i];
+        for(int j = 0; j < list.size(); ++j) {
+            matEdges[i][list[j].to] = list[j].weight;
+        }
+    }
+
+    bool locallyOptimal = false;
+
+    while (!locallyOptimal){
+        locallyOptimal = true;
+        for (int i = 1; i <= N - 3; ++i){
+            int x1 = order[i];
+            int x2 = order[(i+1) % N];
+
+            for(int j = i + 2; j <= (i == 1? N - 2 : N - 1); ++j) {
+                int y1 = order[j];
+                int y2 = order[(j + 1) % N];
+                int moveGain = gainFrom2Opt(x1, x2, y1, y2, matEdges);
+                if(moveGain > 0){
+                    make2OptMove(order, i, j);
+                    locallyOptimal = false;
+                    break;
+                }
+            }
+            if(!locallyOptimal) break;
+        }
+    }
 }
 
 #endif
