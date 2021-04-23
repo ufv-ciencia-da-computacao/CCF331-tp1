@@ -47,8 +47,7 @@ class Graph {
     bool bridge(Edge edge);
     vector<int> closestNeighborHeuristic(int vertex);
     vector<int> savingsHeuristic(int vertex);
-
-    void alg3opt(vector<int>& order);
+    bool alg3opt(vector<int>& order);
 
     private:
     struct Adjacent {
@@ -473,11 +472,10 @@ void make3OptMove(vector<int>& order, int i, int j, int k, int optcase) {
     }
 }
 
-void Graph::alg3opt(vector<int>& order) {
-    bool locallyOptimal = false;
+bool Graph::alg3opt(vector<int>& order) {
     int i, j, k;
     int x1, x2, y1, y2, z1, z2;
-    int optCase[7] = {1, 2, 3, 4, 5, 6, 7};
+    int optCase[7] = {1, 2, 3, 4, 5, 6, 7}; // what if we use a for loop from 1 to 7 ??
     int moveGain;
     
     vector<vector<int>> matEdges(N+1, vector<int>(N+1));
@@ -490,35 +488,34 @@ void Graph::alg3opt(vector<int>& order) {
         }
     }
 
-    while (!locallyOptimal) {
-        locallyOptimal = true;
-        for (int i = 0; i <= N-1; i++) {
-            x1 = order[i];
-            x2 = order[(i+1)%N];
+    bool anyBetterMove = false;
+    for (int i = 0; i <= N-1; i++) {
+        x1 = order[i];
+        x2 = order[(i+1)%N];
 
-            for (int counter2 = 1; counter2 <= N-3; counter2++) {
-                j = (i+counter2)%N;
-                y1 = order[j];
-                y2 = order[(j+1)%N];
+        for (int counter2 = 1; counter2 <= N-3; counter2++) {
+            j = (i+counter2)%N;
+            y1 = order[j];
+            y2 = order[(j+1)%N];
 
-                for (int counter3 = counter2+1; counter3 <= N-1; counter3++) {
-                    k = (i+counter3) %N;
-                    z1 = order[k];
-                    z2 = order[(k+1) %N];
+            for (int counter3 = counter2+1; counter3 <= N-1; counter3++) {
+                k = (i+counter3) %N;
+                z1 = order[k];
+                z2 = order[(k+1) %N];
 
-                    for (int l = 0; l < 6; l++) {
-                        moveGain = gainFrom3Opt(x1, x2, y1, y2, z1, z2, optCase[l], matEdges);
-                        if (moveGain > 0) {
-                            make3OptMove(order, i, j, k, optCase[l]);
-                            locallyOptimal = false;
-                            break;
-                        }
-                    }   
-                }
-            }           
-        } 
+                for (int l = 0; l < 7; l++) {
+                    moveGain = gainFrom3Opt(x1, x2, y1, y2, z1, z2, optCase[l], matEdges);
+                    if (moveGain > 0) {
+                        make3OptMove(order, i, j, k, optCase[l]);
+                        anyBetterMove = true;
+                        break;
+                    }
+                }   
+            }
+        }           
     }
-    
+
+    return anyBetterMove;
 }
 
 #endif

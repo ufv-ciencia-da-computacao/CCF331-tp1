@@ -1,6 +1,20 @@
+// #include "app.hpp"
+#include <iostream>
+#include "timer.hpp"
 #include "app.hpp"
+using namespace std;
 
 int main() {
+
+    Timer max_time(0, 1, 0);
+    Timer t;
+    int cntIterations = -1;
+    t.start();
+    while(t <= max_time and cntIterations <= 10) {
+    }
+    t.stop();
+
+    cout << t << endl;
 
     // vector<Graph::Edge> edgeList;
     // edgeList.emplace_back(1, 2, 1);

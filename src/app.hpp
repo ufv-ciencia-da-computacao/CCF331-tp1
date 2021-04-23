@@ -3,11 +3,14 @@
 
 #include "graph.hpp"
 #include "leitura.hpp"
+#include "timer.hpp"
+#include <ctime>
 
 class App {
     private:
     Graph graph;
     bool status = false;
+
 
     void waitForKeyPressed();
 
@@ -26,6 +29,12 @@ class App {
     void isArticulation();
     void isBridge();
     void graphInfo();
+    void displayMenuContructiveAlgorithms();
+    void displayMenuImprovementAlgorithms();
+    void apllyClosestNeighbor();
+    void applySavings();
+    void apply2Opt();
+    void apply3Opt();
     void generateJson();
     void generateTxt();
     void exit();
@@ -56,8 +65,10 @@ void App::displayMenuOptions() {
         cout << "7 - Floresta de profundidade" << endl;
         cout << "8 - Verificar se vertice eh articulacao" << endl;
         cout << "9 - Verificar se aresta eh ponte" << endl;
-        cout << "10 - Execucao automatica" << endl; 
-        cout << "11 - Salvar" << endl;
+        cout << "10 - Execucao automatica" << endl;
+        cout << "11 - Gerar ciclo hamiltoniano" << endl;
+        cout << "12 - Aplicar heuristica de melhoria" << endl;
+        cout << "13 - Salvar" << endl;
     }
     cout << "0 - Sair" << endl;
     cout << ": ";
@@ -219,9 +230,126 @@ void App::graphInfo() {
     cin >> filename;
     ofstream file("data/info/" + filename);
 
-    file << "Ordem do grafo: " << graph.order() << endl;
+    cout << "Ordem do grafo: " << graph.order() << endl;
     file << "Tamanho do grafo: " << graph.size() << endl;
     file << "Numero de componentes conexas: " << graph.connectedComponents().size() << endl;
+}
+
+void App::displayMenuContructiveAlgorithms() {
+    cout << "Escolha o algotitmo construtivo:" << endl;
+    cout << "1 - Vizinho mais proximo" << endl;
+    cout << "2 - Algoritmo de ecnonomia" << endl;
+    cout << ": ";
+    int option;
+    cin >> option;
+    vector<int> order;
+    switch(option) {
+        case 1:
+            
+            break;
+
+        case 2:
+
+            break;
+
+        default:
+            break;
+    }
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+
+
+}
+
+
+void App::displayMenuImprovementAlgorithms() {
+    cout << "Escolha o algotitmo de melhoria:" << endl;
+    cout << "1 - 2 OPT" << endl;
+    cout << "2 - 3 OPT" << endl;
+    cout << ": ";
+    int option;
+    cin >> option;
+    switch(option) {
+        case 1:
+
+            break;
+
+        case 2:
+
+            break;
+
+        default:
+            break;
+    }
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+
+}
+
+void App::apllyClosestNeighbor() {
+    cout << "Vertice de inicio: ";
+    int vertex;
+    cin >> vertex;
+
+    vector<int> order = graph.closestNeighborHeuristic(vertex);
+}
+
+void App::applySavings() {
+    cout << "Vertice de inicio: ";
+    int vertex;
+    cin >> vertex;
+
+    vector<int> order = graph.savingsHeuristic(vertex);
+}
+
+void App::apply2Opt() {
+    cout << "Arquivo de entrada do caminho hamiltoniano inicial: ";
+    string filename;
+    cin >> filename;
+
+    vector<int> order; // read from file
+
+    Timer max_time(0, 1, 0);
+    Timer t;
+    int cntIterations = -1;
+    t.start();
+    while(t <= max_time and cntIterations <= 10) {
+        bool status = graph.alg3opt(order);
+        if(!status) {
+            cntIterations++;
+        } else {
+            cntIterations = 0;
+        }
+    }
+    t.stop();
+
+    // save to output file
+}
+
+void App::apply3Opt() {
+    cout << "Arquivo de entrada do caminho hamiltoniano inicial: ";
+    string filename;
+    cin >> filename;
+
+    vector<int> order; // read from file
+
+    Timer max_time(0, 1, 0);
+    Timer t;
+    int cntIterations = -1;
+    t.start();
+    while(t <= max_time and cntIterations <= 10) {
+        bool status = graph.alg3opt(order);
+        if(!status) {
+            cntIterations++;
+        } else {
+            cntIterations = 0;
+        }
+    }
+    t.stop();
+
+    // save to output file
 }
 
 void App::generateJson() {
