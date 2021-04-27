@@ -13,10 +13,10 @@ int main() {
     // edgeList.emplace_back(4, 1, 213);
     // edgeList.emplace_back(1, 3, 4);
     // edgeList.emplace_back(2, 4, 10000);
-    //
-    //
+    
+    
     // Graph g(edgeList, 4);
-    //
+    
     // vector<int> aux = {1, 2, 3, 4};
     // do{
     //     vector<int> order = aux;
@@ -24,9 +24,9 @@ int main() {
     //          cout << x << " ";
     //     }
     //     cout << endl;
-    //
-    //     g.alg2opt(order);
-    //
+    
+    //     g.alg3opt(order);
+    
     //     for(int x : order) {
     //          cout << x << " ";
     //     }

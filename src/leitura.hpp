@@ -232,11 +232,67 @@ vector<Graph::Edge> read_tsplib_format(string filename) {
 
             edge_list.emplace_back(vertice_from, vertice_to, weight);
         }
-    }
-    
+    }    
 
     infile.close();
     return edge_list;
+}
+
+void hamiltonian_cycle_to_txt(vector<int> order, string filename) {
+    ofstream outfile;
+    outfile.open(filename);
+
+    if (outfile.is_open()) {
+        outfile << order.size() << '\n';
+        for (int i = 0; i < order.size(); i++) {
+            outfile << order[i] << ' ';
+        }
+
+        outfile << '\n';    
+    }
+
+    outfile.close();
+}
+
+vector<int> get_hamiltonian_cycle_from_txt(string filename) {
+    ifstream infile;
+    infile.open(filename);
+
+    vector<int> order;
+    int N;
+
+    if (infile.is_open()) {
+        string line;
+        getline(infile, line);
+
+        stringstream ss;
+        ss >> N;
+        for (int i = 0; i < N; i++) {
+            infile >> order[i];
+            cout << order[i] << ' ';
+        } 
+        cout << '\n';
+    }
+
+    infile.close();
+}
+
+void order_graph_to_txt(vector<int> order, Graph graph, string filename) {
+    ofstream outfile;
+    outfile.open(filename);
+
+    vector<vector<double>> matEdges = graph.adjToMatrix();
+    int N = order.size();
+    if (outfile.is_open()) {
+        outfile << N+1 << '\n';
+        for (int i = 0; i < N; i++) {
+            outfile << matEdges[order[i]][order[(i+1)%N]] << ' ';
+        }
+
+        outfile << '\n';    
+    }
+
+    outfile.close();
 }
 
 }

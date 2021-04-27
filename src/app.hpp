@@ -53,7 +53,11 @@ void App::waitForKeyPressed() {
     Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
 */
 void App::displayMenuOptions() {
-    system("cls");
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
     cout << "Menu:" << endl;
     cout << "1 - Inicializar Grafo" << endl;
     if(status) {
@@ -75,7 +79,11 @@ void App::displayMenuOptions() {
 }
 
 void App::displayMenuInitGraph() {
-    system("cls");
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
     cout << "Inicializar com" << endl;
     cout << "1 - Json" << endl;
     cout << "2 - Txt" << endl;
@@ -132,6 +140,7 @@ void App::initGraphFromTsp() {
     getline(cin, filename);
     vector<Graph::Edge> edge_list = leitura::read_tsplib_format("data/tsplib/" + filename);
     int n  = leitura::get_length_from_tsp_format("data/tsplib/" + filename);
+
     graph = Graph(edge_list, n);
     status = true;
 }
@@ -299,7 +308,7 @@ void App::applyClosestNeighbor() {
     string filename;
     cin >> filename;
 
-    // write to file
+    leitura::hamiltonian_cycle_to_txt(order, filename);
 }
 
 void App::applySavings() {
@@ -313,7 +322,7 @@ void App::applySavings() {
     string filename;
     cin >> filename;
 
-    // write to file
+    leitura::hamiltonian_cycle_to_txt(order, filename);
 }
 
 void App::apply2Opt() {
@@ -321,7 +330,7 @@ void App::apply2Opt() {
     string filename;
     cin >> filename;
 
-    vector<int> order; // read from file
+    vector<int> order = leitura::get_hamiltonian_cycle_from_txt(filename);
 
     Timer max_time(0, 1, 0);
     Timer t;
@@ -340,7 +349,7 @@ void App::apply2Opt() {
     cout << "Arquivo de saida: ";
     cin >> filename;
 
-    // write to file
+    leitura::order_graph_to_txt(order, graph, filename);
 }
 
 void App::apply3Opt() {
@@ -348,7 +357,7 @@ void App::apply3Opt() {
     string filename;
     cin >> filename;
 
-    vector<int> order; // read from file
+    vector<int> order = leitura::get_hamiltonian_cycle_from_txt(filename);
 
     Timer max_time(0, 1, 0);
     Timer t;
@@ -367,9 +376,7 @@ void App::apply3Opt() {
     cout << "Arquivo de saida: ";
     cin >> filename;
 
-    // write to file
-
-    // save to output file
+    leitura::order_graph_to_txt(order, graph, filename);
 }
 
 void App::generateJson() {

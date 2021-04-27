@@ -37,6 +37,7 @@ class Graph {
     Graph(vector<Edge> edgeList, int n);
     int order();
     int size();
+    vector<vector<double>> adjToMatrix();
     vector<int> neighbors(int vertex);
     int degree(int vertex);
     vector<int> dfs(int from);
@@ -101,6 +102,20 @@ int Graph::order() {
 
 int Graph::size() {
     return M;
+}
+
+vector<vector<double>> Graph::adjToMatrix() {
+    vector<vector<double>> matEdges(N+1, vector<double>(N+1));
+    vector<Adjacent> list;
+
+    for(int i=1; i<=N; i++) {
+        list = adj[i];
+        for(int j=0; j<list.size(); j++) {
+            matEdges[i][list[j].to] = list[j].weight;
+        }
+    }
+
+    return matEdges;
 }
 
 vector<int> Graph::neighbors(int vertex) {
@@ -399,7 +414,7 @@ void reverseSegment(vector<int>& order, int startIndex, int endIndex) {
     }
 }
 
-int gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase, vector<vector<int>> matEdges) {
+int gainFrom3Opt(int x1, int x2, int y1, int y2, int z1, int z2, int optcase, vector<vector<double>> matEdges) {
     int deleteLength, addLength;
 
     switch (optcase) {
@@ -473,21 +488,14 @@ void make3OptMove(vector<int>& order, int i, int j, int k, int optcase) {
     }
 }
 
+
 bool Graph::alg3opt(vector<int>& order) {
     int i, j, k;
     int x1, x2, y1, y2, z1, z2;
     int optCase[7] = {1, 2, 3, 4, 5, 6, 7}; // what if we use a for loop from 1 to 7 ??
     int moveGain;
 
-    vector<vector<int>> matEdges(N+1, vector<int>(N+1));
-    vector<Adjacent> list;
-
-    for(int i=1; i<=N; i++) {
-        list = adj[i];
-        for(int j=0; j<list.size(); j++) {
-            matEdges[i][list[j].to] = list[j].weight;
-        }
-    }
+    vector<vector<double>> matEdges = adjToMatrix();
 
     bool anyBetterMove = false;
     for (int i = 0; i <= N-1; i++) {
@@ -519,7 +527,7 @@ bool Graph::alg3opt(vector<int>& order) {
     return anyBetterMove;
 }
 
-int gainFrom2Opt(int x1, int x2, int y1, int y2, vector<vector<int>> matEdges){
+int gainFrom2Opt(int x1, int x2, int y1, int y2, vector<vector<double>> matEdges){
     int deleteLength = matEdges[x1][x2] + matEdges[y1][y2];
     int addLength = matEdges[x1][y1] + matEdges[x2][y2];
 
@@ -531,15 +539,7 @@ void make2OptMove(vector<int> &order, int i, int j){
 }
 
 bool Graph::alg2opt(vector<int>& order){
-    vector<vector<int>> matEdges(N+1, vector<int>(N+1));
-    vector<Adjacent> list;
-
-    for(int i = 1; i <=N; ++i) {
-        list = adj[i];
-        for(int j = 0; j < list.size(); ++j) {
-            matEdges[i][list[j].to] = list[j].weight;
-        }
-    }
+    vector<vector<double>> matEdges = adjToMatrix();
 
     bool anyBetterMove = false;
     for (int i = 0; i <= N - 3; ++i){
