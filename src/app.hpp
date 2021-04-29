@@ -43,97 +43,6 @@ class App {
     void run();
 };
 
-void App::waitForKeyPressed() {
-    cout << "Aperte ENTER para continuar...";
-    fflush(stdin);
-    getchar();
-}
-
-/* 
-    Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
-*/
-void App::displayMenuOptions() {
-    #ifdef _WIN32
-        system("cls");
-    #elif __linux__
-        system("clear");
-    #endif
-    cout << "Menu:" << endl;
-    cout << "1 - Inicializar Grafo" << endl;
-    if(status) {
-        cout << "2 - Ordem do Grafo" << endl;
-        cout << "3 - Tamanho do Grafo" << endl;
-        cout << "4 - Vizinhos de um vertice" << endl;
-        cout << "5 - Grau de um vertice" << endl;
-        cout << "6 - Busca em profundidade" << endl;
-        cout << "7 - Floresta de profundidade" << endl;
-        cout << "8 - Verificar se vertice eh articulacao" << endl;
-        cout << "9 - Verificar se aresta eh ponte" << endl;
-        cout << "10 - Execucao automatica" << endl;
-        cout << "11 - Gerar ciclo hamiltoniano" << endl;
-        cout << "12 - Aplicar heuristica de melhoria" << endl;
-        cout << "13 - Salvar" << endl;
-    }
-    cout << "0 - Sair" << endl;
-    cout << ": ";
-}
-
-void App::displayMenuInitGraph() {
-    #ifdef _WIN32
-        system("cls");
-    #elif __linux__
-        system("clear");
-    #endif
-    cout << "Inicializar com" << endl;
-    cout << "1 - Json" << endl;
-    cout << "2 - Txt" << endl;
-    cout << "3 - TSP" <<  endl;
-    cout << ": ";
-    int option;
-    cin >> option;
-    cin.ignore();
-    switch (option)
-    {
-    case 1:
-        initGraphFromJson();
-        break;
-
-    case 2:
-        initGraphFromTxt();
-        break;
-    
-    case 3: 
-        initGraphFromTsp();
-        break;
-
-    default:
-        break;
-    }
-}
-
-void App::displayMenuSaveOptions() {
-    system("cls");
-    cout << "Salvar como" << endl;
-    cout << "1 - Json" << endl;
-    cout << "2 - Txt" << endl;
-    cout << ": ";
-    int option;
-    cin >> option;
-    switch (option)
-    {
-    case 1:
-        generateJson();
-        break;
-
-    case 2:
-        generateTxt();
-        break;
-    
-    default:
-        break;
-    }
-}
-
 void App::initGraphFromTsp() {
     cout << "Nome do arquivo: ";
     string filename;
@@ -244,6 +153,102 @@ void App::graphInfo() {
     file << "Numero de componentes conexas: " << graph.connectedComponents().size() << endl;
 }
 
+void App::applyClosestNeighbor() {
+    cout << "Vertice de inicio: ";
+    int vertex;
+    cin >> vertex;
+
+    vector<int> order = graph.closestNeighborHeuristic(vertex);
+
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+
+    leitura::hamiltonian_cycle_to_txt(order, "data/tsplib/execucao/" + filename);
+}
+
+void App::applySavings() {
+    cout << "Vertice de inicio: ";
+    int vertex;
+    cin >> vertex;
+
+    vector<int> order = graph.savingsHeuristic(vertex);
+
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+
+    leitura::hamiltonian_cycle_to_txt(order, "data/tsplib/execucao/" + filename);
+}
+
+void App::apply2Opt() {
+    cout << "Arquivo de entrada do caminho hamiltoniano inicial: ";
+    string filename;
+    cin >> filename;
+
+    vector<int> order = leitura::get_hamiltonian_cycle_from_txt("data/tsplib/execucao/" + filename);
+
+    Timer max_time(0, 1, 0);
+    Timer t;
+    int cntIterations = -1;
+    t.start();
+    while(t <= max_time and cntIterations <= 10) {
+        bool status = graph.alg3opt(order);
+        if(!status) {
+            cntIterations++;
+        } else {
+            cntIterations = 0;
+        }
+    }
+    t.stop();
+
+    cout << "Arquivo de saida: ";
+    cin >> filename;
+
+    leitura::order_graph_to_txt(order, graph, "data/tsplib/execucao/" + filename);
+}
+
+void App::apply3Opt() {
+    cout << "Arquivo de entrada do caminho hamiltoniano inicial: ";
+    string filename;
+    cin >> filename;
+
+    vector<int> order = leitura::get_hamiltonian_cycle_from_txt("data/tsplib/execucao/" + filename);
+
+    Timer max_time(0, 1, 0);
+    Timer t;
+    int cntIterations = -1;
+    t.start();
+    while(t <= max_time and cntIterations <= 10) {
+        bool status = graph.alg3opt(order);
+        if(!status) {
+            cntIterations++;
+        } else {
+            cntIterations = 0;
+        }
+    }
+    t.stop();
+
+    cout << "Arquivo de saida: ";
+    cin >> filename;
+
+    leitura::order_graph_to_txt(order, graph, "data/tsplib/execucao/" + filename);
+}
+
+void App::generateJson() {
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+    leitura::edge_list_to_json(graph.toEdgeList(), graph.order(), "data/json/" + filename);
+}
+
+void App::generateTxt() {
+    cout << "Arquivo de saida: ";
+    string filename;
+    cin >> filename;
+    leitura::edge_list_to_txt(graph.toEdgeList(), graph.order(), "data/txt/" + filename);
+}
+
 void App::displayMenuContructiveAlgorithms() {
     cout << "Escolha o algotitmo construtivo:" << endl;
     cout << "1 - Vizinho mais proximo" << endl;
@@ -251,7 +256,7 @@ void App::displayMenuContructiveAlgorithms() {
     cout << ": ";
     int option;
     cin >> option;
-    vector<int> order;
+
     switch(option) {
         case 1:
             applyClosestNeighbor();
@@ -264,13 +269,7 @@ void App::displayMenuContructiveAlgorithms() {
         default:
             break;
     }
-    cout << "Arquivo de saida: ";
-    string filename;
-    cin >> filename;
-
-
 }
-
 
 void App::displayMenuImprovementAlgorithms() {
     cout << "Escolha o algotitmo de melhoria:" << endl;
@@ -291,111 +290,103 @@ void App::displayMenuImprovementAlgorithms() {
         default:
             break;
     }
-    cout << "Arquivo de saida: ";
-    string filename;
-    cin >> filename;
-
 }
 
-void App::applyClosestNeighbor() {
-    cout << "Vertice de inicio: ";
-    int vertex;
-    cin >> vertex;
-
-    vector<int> order = graph.closestNeighborHeuristic(vertex);
-
-    cout << "Arquivo de saida: ";
-    string filename;
-    cin >> filename;
-
-    leitura::hamiltonian_cycle_to_txt(order, filename);
+void App::waitForKeyPressed() {
+    cout << "Aperte ENTER para continuar...";
+    fflush(stdin);
+    getchar();
 }
 
-void App::applySavings() {
-    cout << "Vertice de inicio: ";
-    int vertex;
-    cin >> vertex;
-
-    vector<int> order = graph.savingsHeuristic(vertex);
-
-    cout << "Arquivo de saida: ";
-    string filename;
-    cin >> filename;
-
-    leitura::hamiltonian_cycle_to_txt(order, filename);
-}
-
-void App::apply2Opt() {
-    cout << "Arquivo de entrada do caminho hamiltoniano inicial: ";
-    string filename;
-    cin >> filename;
-
-    vector<int> order = leitura::get_hamiltonian_cycle_from_txt(filename);
-
-    Timer max_time(0, 1, 0);
-    Timer t;
-    int cntIterations = -1;
-    t.start();
-    while(t <= max_time and cntIterations <= 10) {
-        bool status = graph.alg3opt(order);
-        if(!status) {
-            cntIterations++;
-        } else {
-            cntIterations = 0;
-        }
+/* 
+    Para o teste da biblioteca faça um programa principal que leia o arquivo texto e salve em um arquivo texto as diversas informações sobre o grafo lido.
+*/
+void App::displayMenuOptions() {
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
+    cout << "Menu:" << endl;
+    cout << "1 - Inicializar Grafo" << endl;
+    if(status) {
+        cout << "2 - Ordem do Grafo" << endl;
+        cout << "3 - Tamanho do Grafo" << endl;
+        cout << "4 - Vizinhos de um vertice" << endl;
+        cout << "5 - Grau de um vertice" << endl;
+        cout << "6 - Busca em profundidade" << endl;
+        cout << "7 - Floresta de profundidade" << endl;
+        cout << "8 - Verificar se vertice eh articulacao" << endl;
+        cout << "9 - Verificar se aresta eh ponte" << endl;
+        cout << "10 - Execucao automatica" << endl;
+        cout << "11 - Aplicar heuristica construtiva" << endl;
+        cout << "12 - Aplicar heuristica de melhoria" << endl;
+        cout << "13 - Salvar" << endl;
     }
-    t.stop();
-
-    cout << "Arquivo de saida: ";
-    cin >> filename;
-
-    leitura::order_graph_to_txt(order, graph, filename);
+    cout << "0 - Sair" << endl;
+    cout << ": ";
 }
 
-void App::apply3Opt() {
-    cout << "Arquivo de entrada do caminho hamiltoniano inicial: ";
-    string filename;
-    cin >> filename;
+void App::displayMenuInitGraph() {
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
+    cout << "Inicializar com" << endl;
+    cout << "1 - Json" << endl;
+    cout << "2 - Txt" << endl;
+    cout << "3 - TSP" <<  endl;
+    cout << ": ";
+    int option;
+    cin >> option;
+    cin.ignore();
+    switch (option)
+    {
+    case 1:
+        initGraphFromJson();
+        break;
 
-    vector<int> order = leitura::get_hamiltonian_cycle_from_txt(filename);
+    case 2:
+        initGraphFromTxt();
+        break;
+    
+    case 3: 
+        initGraphFromTsp();
+        break;
 
-    Timer max_time(0, 1, 0);
-    Timer t;
-    int cntIterations = -1;
-    t.start();
-    while(t <= max_time and cntIterations <= 10) {
-        bool status = graph.alg3opt(order);
-        if(!status) {
-            cntIterations++;
-        } else {
-            cntIterations = 0;
-        }
+    default:
+        break;
     }
-    t.stop();
-
-    cout << "Arquivo de saida: ";
-    cin >> filename;
-
-    leitura::order_graph_to_txt(order, graph, filename);
 }
 
-void App::generateJson() {
-    cout << "Arquivo de saida: ";
-    string filename;
-    cin >> filename;
-    leitura::edge_list_to_json(graph.toEdgeList(), graph.order(), "data/json/" + filename);
-}
+void App::displayMenuSaveOptions() {
+    system("cls");
+    cout << "Salvar como" << endl;
+    cout << "1 - Json" << endl;
+    cout << "2 - Txt" << endl;
+    cout << ": ";
+    int option;
+    cin >> option;
+    switch (option)
+    {
+    case 1:
+        generateJson();
+        break;
 
-void App::generateTxt() {
-    cout << "Arquivo de saida: ";
-    string filename;
-    cin >> filename;
-    leitura::edge_list_to_txt(graph.toEdgeList(), graph.order(), "data/txt/" + filename);
+    case 2:
+        generateTxt();
+        break;
+    
+    default:
+        break;
+    }
 }
 
 void App::exit() {
     cout << endl << "Sair" << endl << endl;
 }
+
 
 void App::run() {
     int option = -1;
@@ -447,6 +438,14 @@ void App::run() {
             break;
 
         case 11:
+            displayMenuContructiveAlgorithms();
+            break;
+        
+        case 12:
+            displayMenuImprovementAlgorithms();
+            break;
+       
+        case 13:
             displayMenuSaveOptions();
             break;
 

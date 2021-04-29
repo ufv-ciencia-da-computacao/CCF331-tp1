@@ -255,26 +255,30 @@ void hamiltonian_cycle_to_txt(vector<int> order, string filename) {
 }
 
 vector<int> get_hamiltonian_cycle_from_txt(string filename) {
-    ifstream infile;
+    fstream infile;
     infile.open(filename);
-
     vector<int> order;
     int N;
+
+    cout << filename;
 
     if (infile.is_open()) {
         string line;
         getline(infile, line);
-
-        stringstream ss;
+        stringstream ss(line);
         ss >> N;
-        for (int i = 0; i < N; i++) {
-            infile >> order[i];
-            cout << order[i] << ' ';
-        } 
-        cout << '\n';
+
+        getline(infile, line);
+        istringstream iss(line); 
+        
+        int element;
+        while (iss >> element) {
+            order.push_back(element);
+        }
     }
 
     infile.close();
+    return order;
 }
 
 void order_graph_to_txt(vector<int> order, Graph graph, string filename) {
@@ -284,9 +288,9 @@ void order_graph_to_txt(vector<int> order, Graph graph, string filename) {
     vector<vector<double>> matEdges = graph.adjToMatrix();
     int N = order.size();
     if (outfile.is_open()) {
-        outfile << N+1 << '\n';
+        outfile << N << '\n';
         for (int i = 0; i < N; i++) {
-            outfile << matEdges[order[i]][order[(i+1)%N]] << ' ';
+            outfile << order[i] << ' ' << order[(i+1)%N] << ' ' << matEdges[order[i]][order[(i+1)%N]] << '\n';
         }
 
         outfile << '\n';    
