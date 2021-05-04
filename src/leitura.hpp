@@ -229,7 +229,6 @@ vector<Graph::Edge> read_tsplib_format(string filename) {
             int vertice_from = i;
             int vertice_to = j;
             int weight = euclidean_distance(nodes[i], nodes[j]);
-
             edge_list.emplace_back(vertice_from, vertice_to, weight);
         }
     }    

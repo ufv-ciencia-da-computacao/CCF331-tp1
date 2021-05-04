@@ -329,6 +329,7 @@ vector<int> Graph::savingsHeuristic(int vertex) {
             --s;
         }
         if(s==1) break;
+
     }
 
     // What is the best way to return this matrix? (Starting from vertex)
@@ -338,6 +339,7 @@ vector<int> Graph::savingsHeuristic(int vertex) {
         }
         cout << endl;
     }*/
+
 
     // Proposed way
     for(int i=1; i<=N; i++) {
