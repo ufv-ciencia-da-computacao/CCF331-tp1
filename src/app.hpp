@@ -5,6 +5,7 @@
 #include "leitura.hpp"
 #include "timer.hpp"
 #include <ctime>
+#include "tsp.hpp"
 
 class App {
     private:
@@ -29,6 +30,7 @@ class App {
     void isArticulation();
     void isBridge();
     void graphInfo();
+    void displayTSPSolve();
     void displayMenuContructiveAlgorithms();
     void displayMenuImprovementAlgorithms();
     void applyClosestNeighbor();
@@ -249,6 +251,34 @@ void App::generateTxt() {
     leitura::edge_list_to_txt(graph.toEdgeList(), graph.order(), "data/txt/" + filename);
 }
 
+void App::displayTSPSolve() {
+    cout << "Digite a instancia:" << endl;
+    cout << "1 - berlin52" << endl;
+    cout << "2 - CH130" << endl;
+    cout << "3 - D198" << endl;
+    cout << ": ";
+    
+    int instancia;
+    cin >> instancia;
+
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
+
+    cout << "Digite o metodo" << endl;
+    cout << "1 - Nearest Neighbour + 2Opt" << endl;
+    cout << "2 - Savings + 2Opt" << endl;
+    cout << ": ";
+    
+    int metodo;
+    cin >> metodo;
+    
+    TSP tsp(graph);
+    tsp.run(metodo, instancia);
+}
+
 void App::displayMenuContructiveAlgorithms() {
     cout << "Escolha o algotitmo construtivo:" << endl;
     cout << "1 - Vizinho mais proximo" << endl;
@@ -321,7 +351,8 @@ void App::displayMenuOptions() {
         cout << "10 - Execucao automatica" << endl;
         cout << "11 - Aplicar heuristica construtiva" << endl;
         cout << "12 - Aplicar heuristica de melhoria" << endl;
-        cout << "13 - Salvar" << endl;
+        cout << "13 - TSP Solver" << endl;
+        cout << "14 - Salvar" << endl;
     }
     cout << "0 - Sair" << endl;
     cout << ": ";
@@ -444,8 +475,12 @@ void App::run() {
         case 12:
             displayMenuImprovementAlgorithms();
             break;
-       
+
         case 13:
+            displayTSPSolve();
+            break;
+       
+        case 14:
             displayMenuSaveOptions();
             break;
 

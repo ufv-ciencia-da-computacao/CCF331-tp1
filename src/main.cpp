@@ -1,7 +1,11 @@
 // #include "app.hpp"
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>  
+#include <ctime>
 #include "timer.hpp"
 #include "app.hpp"
+#include "tsp.hpp"
 using namespace std;
 
 int main() {
@@ -33,6 +37,7 @@ int main() {
     //     cout << endl<< endl;
     // }while(next_permutation(aux.begin(), aux.end()));
 
+    srand (time(NULL));
     App app;
     app.run();
 
