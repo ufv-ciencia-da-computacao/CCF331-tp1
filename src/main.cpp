@@ -39,7 +39,7 @@ int main() {
 
     srand (time(NULL));
     App app;
-    app.run();
+    app.run();      
 
     return 0;
 }

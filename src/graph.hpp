@@ -50,6 +50,8 @@ class Graph {
     vector<int> savingsHeuristic(int vertex);
     bool alg3opt(vector<int>& order);
     bool alg2opt(vector<int>& order);
+    bool hasCycle(vector<vector<int>>& matrix, int start_vertex);
+    bool dfsSavings(vector<vector<int>>& matrix, int vertex, set<int>&visited, int parent);
 
     private:
     struct Adjacent {
@@ -298,7 +300,7 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     vector<Edge> temp;
     vector<Edge> savings;
     vector<Adjacent> list;
-    int I[N+1][N+1] = {};
+    vector<vector<int>> I (N+1, vector<int>(N+1, 0));
     int matEdges[N+1][N+1] = {};
 
     for(int i=1; i<=N; i++) {
@@ -323,10 +325,21 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     int s = N-1;
     for(int i=0; i<savings.size(); i++) {
         if(I[1][savings[i].from]>0 && I[1][savings[i].to]>0) {
-            --I[1][savings[i].from];
-            --I[1][savings[i].to];
-            ++I[savings[i].from][savings[i].to];
+            I[1][savings[i].from]--;
+            I[1][savings[i].to]--;
+            I[savings[i].from][savings[i].to]++;
+            I[savings[i].to][savings[i].from]++;
+
+            if (hasCycle(I,savings[i].from)) {
+                I[1][savings[i].from]++;
+                I[1][savings[i].to]++;
+                I[savings[i].from][savings[i].to]--;
+                I[savings[i].to][savings[i].from]--;
+                continue;
+            }
+            
             --s;
+
         }
         if(s==1) break;
 
@@ -375,6 +388,31 @@ vector<int> Graph::savingsHeuristic(int vertex) {
 
     return order;
 
+}
+
+bool Graph::dfsSavings(vector<vector<int>>& matrix, int vertex, set<int>&visited, int parent) {
+   visited.insert(vertex);
+   for(int v = 1; v < N; v++) {
+      if(matrix[vertex][v]) {
+         if(v == parent)
+            continue;
+         if(visited.find(v) != visited.end())
+            return true;
+         if(dfsSavings(matrix, v, visited, vertex))
+            return true;
+      }
+   }
+   return false;
+}
+
+bool Graph::hasCycle(vector<vector<int>>& matrix, int start_vertex) {
+    set<int> visited;
+
+    if(dfsSavings(matrix, start_vertex, visited, -1)) {
+        return true;
+    }
+
+    return false;
 }
 
 void Graph::sortEdgeListByWeight(vector<Edge> &array) {
