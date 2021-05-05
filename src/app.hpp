@@ -282,7 +282,7 @@ void App::displayTSPSolve() {
 void App::displayMenuContructiveAlgorithms() {
     cout << "Escolha o algotitmo construtivo:" << endl;
     cout << "1 - Vizinho mais proximo" << endl;
-    cout << "2 - Algoritmo de ecnonomia" << endl;
+    cout << "2 - Algoritmo de economia" << endl;
     cout << ": ";
     int option;
     cin >> option;

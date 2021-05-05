@@ -301,13 +301,10 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     vector<Edge> savings;
     vector<Adjacent> list;
     vector<vector<int>> I (N+1, vector<int>(N+1, 0));
-    int matEdges[N+1][N+1] = {};
+    vector<vector<int>> matEdges (N+1, vector<int>(N+1, 0));
 
     for(int i=1; i<=N; i++) {
         I[1][i] = 2;
-    }
-
-    for(int i=1; i<=N; i++) {
         list = adj[i];
         for(int j=0; j<list.size(); j++) {
             matEdges[i][list[j].to] = list[j].weight;
@@ -345,16 +342,6 @@ vector<int> Graph::savingsHeuristic(int vertex) {
 
     }
 
-    // What is the best way to return this matrix? (Starting from vertex)
-    /*for(int i=1; i<=N; i++) {
-        for(int j=1; j<=N; j++) {
-            cout << I[i][j] << " ";
-        }
-        cout << endl;
-    }*/
-
-
-    // Proposed way
     for(int i=1; i<=N; i++) {
         for(int j=i+1; j<=N; j++) {
             if(I[i][j]==1) {
@@ -364,7 +351,7 @@ vector<int> Graph::savingsHeuristic(int vertex) {
     }
 
     int comp = vertex, flag;
-    while(order.size()<N) {
+    while(temp.size()>0) {
         flag = 0;
         for(int i=0; i<temp.size(); i++) {
             if(temp[i].from == comp) {
@@ -392,7 +379,7 @@ vector<int> Graph::savingsHeuristic(int vertex) {
 
 bool Graph::dfsSavings(vector<vector<int>>& matrix, int vertex, set<int>&visited, int parent) {
    visited.insert(vertex);
-   for(int v = 1; v < N; v++) {
+   for(int v = 1; v <= N; v++) {
       if(matrix[vertex][v]) {
          if(v == parent)
             continue;
