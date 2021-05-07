@@ -6,6 +6,8 @@
 #include "timer.hpp"
 #include <ctime>
 #include "tsp.hpp"
+#include "metrics.hpp"
+#include <stdio_ext.h>
 
 class App {
     private:
@@ -31,6 +33,7 @@ class App {
     void isBridge();
     void graphInfo();
     void displayTSPSolve();
+    void displayMetrics();
     void displayMenuContructiveAlgorithms();
     void displayMenuImprovementAlgorithms();
     void applyClosestNeighbor();
@@ -279,6 +282,73 @@ void App::displayTSPSolve() {
     tsp.run(metodo, instancia);
 }
 
+void App::displayMetrics() {
+    int option = -1;
+    string path;
+    string f;
+
+    while(option != 0) {
+        #ifdef _WIN32
+            system("cls");
+        #elif __linux__
+            system("clear");
+        #endif
+        cout << "Digite o metodo" << endl;
+        cout << "1 - Pior Caso" << endl;
+        cout << "2 - Melhor Caso" << endl;
+        cout << "3 - Média" << endl;
+        cout << "4 - Desvio Padrão" << endl;
+        cout << "0 - Sair" << endl;
+        cout << ": ";
+        cin >> option;
+
+        switch (option) {
+            case 1:
+                cout << "Digite o diretório onde estão localizados os arquivos dos ciclos hamiltonianos gerados: ";
+                cin >> path;
+
+                f = metrics::worst_case(path);
+
+                cout << "Pior Caso: " << f << " - " << metrics::sum(leitura::read_txt(path+"/"+f)) << endl;
+
+                break;
+
+            case 2:
+                cout << "Digite o diretório onde estão localizados os arquivos dos ciclos hamiltonianos gerados: ";
+                cin >> path;
+
+                f = metrics::best_case(path);
+
+                cout << "Melhor Caso: " << f << " - " << metrics::sum(leitura::read_txt(path+"/"+f)) << endl;
+                break;
+
+            case 3:
+                cout << "Digite o diretório onde estão localizados os arquivos dos ciclos hamiltonianos gerados: ";
+                cin >> path;
+
+                cout << "Média: " << metrics::mean(path) << endl;
+                break;
+
+            case 4:
+                cout << "Digite o diretório onde estão localizados os arquivos dos ciclos hamiltonianos gerados: ";
+                cin >> path;
+
+                cout << "Desvio Padrão: " << metrics::standard_deviation(path) << endl;
+                break;
+
+            case 0:
+                exit();
+                return;
+                break;
+
+            default:
+                break;
+        }
+
+        waitForKeyPressed();
+    }
+}
+
 void App::displayMenuContructiveAlgorithms() {
     cout << "Escolha o algotitmo construtivo:" << endl;
     cout << "1 - Vizinho mais proximo" << endl;
@@ -324,7 +394,11 @@ void App::displayMenuImprovementAlgorithms() {
 
 void App::waitForKeyPressed() {
     cout << "Aperte ENTER para continuar...";
-    fflush(stdin);
+    #ifdef _WIN32
+        fflush(stdin);
+    #elif __linux__
+        __fpurge(stdin);
+    #endif
     getchar();
 }
 
@@ -339,20 +413,21 @@ void App::displayMenuOptions() {
     #endif
     cout << "Menu:" << endl;
     cout << "1 - Inicializar Grafo" << endl;
+    cout << "2 - Metricas" << endl;
     if(status) {
-        cout << "2 - Ordem do Grafo" << endl;
-        cout << "3 - Tamanho do Grafo" << endl;
-        cout << "4 - Vizinhos de um vertice" << endl;
-        cout << "5 - Grau de um vertice" << endl;
-        cout << "6 - Busca em profundidade" << endl;
-        cout << "7 - Floresta de profundidade" << endl;
-        cout << "8 - Verificar se vertice eh articulacao" << endl;
-        cout << "9 - Verificar se aresta eh ponte" << endl;
-        cout << "10 - Execucao automatica" << endl;
-        cout << "11 - Aplicar heuristica construtiva" << endl;
-        cout << "12 - Aplicar heuristica de melhoria" << endl;
-        cout << "13 - TSP Solver" << endl;
-        cout << "14 - Salvar" << endl;
+        cout << "3 - Ordem do Grafo" << endl;
+        cout << "4 - Tamanho do Grafo" << endl;
+        cout << "5 - Vizinhos de um vertice" << endl;
+        cout << "6 - Grau de um vertice" << endl;
+        cout << "7 - Busca em profundidade" << endl;
+        cout << "8 - Floresta de profundidade" << endl;
+        cout << "9 - Verificar se vertice eh articulacao" << endl;
+        cout << "10 - Verificar se aresta eh ponte" << endl;
+        cout << "11 - Execucao automatica" << endl;
+        cout << "12 - Aplicar heuristica construtiva" << endl;
+        cout << "13 - Aplicar heuristica de melhoria" << endl;
+        cout << "14 - TSP Solver" << endl;
+        cout << "15 - Salvar" << endl;
     }
     cout << "0 - Sair" << endl;
     cout << ": ";
@@ -433,54 +508,59 @@ void App::run() {
             break;
 
         case 2:
-            displayGraphOrder();
+            displayMetrics();
             break;
 
         case 3:
-            displayGraphSize();
+            displayGraphOrder();
             break;
 
         case 4:
-            displayVertexNeighbors();
+            displayGraphSize();
             break;
 
         case 5:
-            displayVertexDegree();
+            displayVertexNeighbors();
             break;
 
         case 6:
-            displayDfsPath();
+            displayVertexDegree();
             break;
 
         case 7:
-            displayDfsForest();
+            displayDfsPath();
             break;
 
         case 8:
-            isArticulation();
+            displayDfsForest();
             break;
 
         case 9:
-            isBridge();
+            isArticulation();
             break;
 
         case 10:
-            graphInfo();
+            isBridge();
             break;
 
         case 11:
+            graphInfo();
+            break;
+
+        case 12:
             displayMenuContructiveAlgorithms();
             break;
         
-        case 12:
+        case 13:
             displayMenuImprovementAlgorithms();
             break;
 
-        case 13:
+        case 14:
             displayTSPSolve();
             break;
+        
        
-        case 14:
+        case 15:
             displayMenuSaveOptions();
             break;
 
