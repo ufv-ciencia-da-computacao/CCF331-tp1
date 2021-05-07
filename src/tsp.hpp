@@ -5,7 +5,7 @@
 #include "leitura.hpp"
 #include "timer.hpp"
 #include <stdlib.h>
-#include <time.h>  
+#include <time.h>
 #include <ctime>
 
 class TSP {
@@ -20,7 +20,7 @@ class TSP {
         void apply3Opt(string input_filename, string output_filename, Timer max_time);
     public:
         void run(int metodo, int instancia);
-        
+
         TSP(Graph g) {
             graph = g;
         }
@@ -83,7 +83,7 @@ void TSP::run(int metodo, int instancia) {
     string pattern = "data/tsplib/";
     vector<int> qtdVertex = {52, 130, 198};
     vector<string> directories = {pattern+"berlin/", pattern+"churritz/", pattern+"reinelt/"};
-    
+
     string directory_active = directories[instancia-1];
     int randomBound = qtdVertex[instancia-1];
 
@@ -106,10 +106,10 @@ void TSP::run(int metodo, int instancia) {
             string tsp_output = directory_active+"metodo2/tsp_"+to_string(i);
 
             applySavings(randVertex, hamiltonian_path_output);
-            apply3Opt(hamiltonian_path_output, tsp_output, max_time);
-        }        
+            apply2Opt(hamiltonian_path_output, tsp_output, max_time);
+        }
     }
-    
+
 }
 
 #endif
