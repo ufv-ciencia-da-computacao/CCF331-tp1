@@ -198,7 +198,7 @@ void App::apply2Opt() {
     int cntIterations = -1;
     t.start();
     while(t <= max_time and cntIterations <= 10) {
-        bool status = graph.alg3opt(order);
+        bool status = graph.alg2opt(order);
         if(!status) {
             cntIterations++;
         } else {
